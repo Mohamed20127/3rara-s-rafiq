@@ -1,0 +1,2316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0a0a08">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="رفيق عرفة">
+<title>رفيق عرفة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600&family=Cairo:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════════════════ */
+:root {
+  --bg:        #F7F4EE;
+  --bg2:       #EDEAE1;
+  --bg3:       #E4E0D5;
+  --surface:   rgba(255,255,255,0.7);
+  --black:     #0F0F0C;
+  --gold:      #C4A05A;
+  --gold2:     #D4B870;
+  --gold3:     #8C6E35;
+  --gold-glow: rgba(196,160,90,0.25);
+  --olive:     #5E6E4A;
+  --warm:      #D0C8BA;
+  --text:      #1C1A16;
+  --text2:     #6B6356;
+  --text3:     #A09688;
+  --border:    rgba(196,160,90,0.18);
+  --border2:   rgba(196,160,90,0.35);
+  --shadow:    0 2px 20px rgba(15,15,12,0.06);
+  --shadow2:   0 8px 40px rgba(15,15,12,0.10);
+  --shadow3:   0 20px 60px rgba(15,15,12,0.14);
+  --r:         22px;
+  --r2:        14px;
+  --r3:        10px;
+  --ease:      cubic-bezier(0.4,0,0.2,1);
+  --t:         0.38s;
+  --font:      'IBM Plex Sans Arabic','Cairo',sans-serif;
+  --safe-top:  env(safe-area-inset-top, 0px);
+  --safe-bot:  env(safe-area-inset-bottom, 0px);
+}
+[data-theme="dark"] {
+  --bg:        #080807;
+  --bg2:       #110F0C;
+  --bg3:       #1A1712;
+  --surface:   rgba(20,18,14,0.85);
+  --black:     #F0EDE5;
+  --gold:      #C4A05A;
+  --gold2:     #D4B870;
+  --gold3:     #E8D090;
+  --gold-glow: rgba(196,160,90,0.18);
+  --olive:     #7A8E5E;
+  --warm:      #252018;
+  --text:      #E8E3D8;
+  --text2:     #8A8070;
+  --text3:     #5A5248;
+  --border:    rgba(196,160,90,0.12);
+  --border2:   rgba(196,160,90,0.28);
+  --shadow:    0 2px 20px rgba(0,0,0,0.35);
+  --shadow2:   0 8px 40px rgba(0,0,0,0.45);
+  --shadow3:   0 20px 60px rgba(0,0,0,0.55);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100%;
+  overflow-x:hidden;
+  transition:background var(--t) var(--ease),color var(--t) var(--ease);
+  overscroll-behavior:none;
+}
+button,input{font-family:var(--font);outline:none;border:none;cursor:pointer;-webkit-appearance:none}
+img{max-width:100%;display:block}
+::selection{background:var(--gold-glow);color:var(--text)}
+
+/* ══════════════════════════════════════════════════
+   SPLASH
+══════════════════════════════════════════════════ */
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  background:#06060500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;overflow:hidden;
+  transition:opacity 1s var(--ease),visibility 1s var(--ease);
+}
+#splash.out{opacity:0;visibility:hidden;pointer-events:none}
+
+.sp-canvas{position:absolute;inset:0}
+.sp-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 70% at 50% 50%, #12110E 0%, #06060A 100%);
+}
+.sp-noise{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:0.5;pointer-events:none;
+}
+.sp-glow{
+  position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(196,160,90,0.07) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:spGlowPulse 4s ease-in-out infinite;
+}
+
+.sp-mandala{
+  position:relative;width:180px;height:180px;margin-bottom:40px;
+  animation:fadeUp 1.2s 0.3s var(--ease) both,floatY 8s 1.5s ease-in-out infinite;
+}
+.sp-mandala svg{width:100%;height:100%}
+
+.sp-title{
+  font-size:clamp(2.8rem,8vw,4rem);font-weight:200;
+  color:#F0EDE5;letter-spacing:0.04em;text-align:center;
+  animation:fadeUp 1s 0.6s var(--ease) both;
+  margin-bottom:10px;
+}
+.sp-sub{
+  font-size:0.9rem;font-weight:300;color:var(--gold);
+  letter-spacing:0.18em;text-align:center;
+  animation:fadeUp 1s 0.8s var(--ease) both;
+  margin-bottom:48px;
+}
+.sp-line{
+  width:1px;height:50px;
+  background:linear-gradient(to bottom,transparent,var(--gold),transparent);
+  margin:0 auto 40px;
+  animation:fadeUp 1s 1s var(--ease) both;
+}
+.sp-btn{
+  padding:16px 56px;
+  border:1px solid var(--gold);background:transparent;
+  color:var(--gold);font-size:0.95rem;font-weight:300;
+  letter-spacing:0.16em;border-radius:60px;
+  position:relative;overflow:hidden;
+  animation:fadeUp 1s 1.1s var(--ease) both;
+  transition:color 0.4s,background 0.4s,box-shadow 0.4s;
+}
+.sp-btn::after{
+  content:'';position:absolute;inset:0;
+  background:var(--gold);transform:scaleX(0);transform-origin:left;
+  transition:transform 0.4s var(--ease);z-index:-1;
+}
+.sp-btn:hover{color:#06060A;box-shadow:0 0 40px var(--gold-glow)}
+.sp-btn:hover::after{transform:scaleX(1)}
+
+/* ══════════════════════════════════════════════════
+   AMBIENT PARTICLES
+══════════════════════════════════════════════════ */
+.particle{
+  position:absolute;width:2px;height:2px;border-radius:50%;
+  background:var(--gold);opacity:0;
+  animation:particleRise var(--dur,8s) var(--delay,0s) ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════════════════ */
+#app{display:none;min-height:100svh;padding-bottom:calc(80px + var(--safe-bot))}
+#app.on{display:block}
+
+/* Floating Controls */
+.fab-cluster{
+  position:fixed;top:calc(16px + var(--safe-top));left:16px;z-index:200;
+  display:flex;flex-direction:column;gap:8px;
+}
+.fab{
+  width:42px;height:42px;border-radius:50%;
+  background:var(--surface);
+  border:1px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:var(--shadow2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;cursor:pointer;
+  transition:all 0.3s var(--ease);
+  color:var(--text2);
+}
+.fab:hover{border-color:var(--gold);box-shadow:0 0 20px var(--gold-glow);transform:scale(1.05)}
+
+/* ══════════════════════════════════════════════════
+   BOTTOM NAV — PILL DESIGN
+══════════════════════════════════════════════════ */
+.nav-bar{
+  position:fixed;bottom:calc(12px + var(--safe-bot));left:50%;transform:translateX(-50%);
+  z-index:300;
+  background:var(--surface);
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  border:1px solid var(--border);
+  border-radius:60px;
+  box-shadow:var(--shadow3);
+  display:flex;align-items:center;
+  padding:6px 8px;gap:2px;
+  min-width:320px;max-width:92vw;
+  transition:background var(--t);
+}
+[data-theme="dark"] .nav-bar{background:rgba(12,10,8,0.88)}
+
+.ni{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px;border-radius:50px;
+  background:transparent;color:var(--text3);
+  font-size:0.58rem;font-weight:400;letter-spacing:0.03em;
+  transition:all 0.3s var(--ease);position:relative;
+}
+.ni svg{width:20px;height:20px;transition:transform 0.3s var(--ease)}
+.ni.on{color:var(--gold);background:rgba(196,160,90,0.1)}
+.ni.on svg{transform:scale(1.15)}
+.ni-dot{
+  position:absolute;top:6px;right:6px;
+  width:5px;height:5px;border-radius:50%;
+  background:var(--gold);opacity:0;
+  transition:opacity 0.3s;
+}
+.ni.has-update .ni-dot{opacity:1}
+
+/* ══════════════════════════════════════════════════
+   PAGES
+══════════════════════════════════════════════════ */
+.pg{display:none;animation:pgIn 0.45s var(--ease) both}
+.pg.on{display:block}
+@keyframes pgIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ══════════════════════════════════════════════════
+   PAGE HERO
+══════════════════════════════════════════════════ */
+.hero{
+  background:var(--black);
+  padding:calc(56px + var(--safe-top)) 24px 36px;
+  text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 100% at 50% -10%,rgba(196,160,90,0.1) 0%,transparent 70%);
+}
+.hero-ornament{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  margin-bottom:20px;
+}
+.hero-line{
+  height:1px;width:60px;
+  background:linear-gradient(to right,transparent,var(--gold));
+  opacity:0.5;
+}
+.hero-line.l{background:linear-gradient(to left,transparent,var(--gold))}
+.hero-diamond{
+  width:6px;height:6px;background:var(--gold);
+  transform:rotate(45deg);opacity:0.7;
+}
+.hero-time{
+  font-size:clamp(3.5rem,12vw,5rem);
+  font-weight:100;letter-spacing:-0.03em;
+  color:#F0EDE5;line-height:1;margin-bottom:6px;
+  font-feature-settings:'tnum';
+}
+.hero-ampm{font-size:1.2rem;font-weight:300;color:var(--gold);margin-right:6px}
+.hero-date{
+  font-size:0.82rem;color:var(--gold);
+  font-weight:300;letter-spacing:0.1em;margin-bottom:20px;
+}
+.hero-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(196,160,90,0.1);
+  border:1px solid rgba(196,160,90,0.22);
+  border-radius:40px;padding:6px 14px;
+  font-size:0.75rem;color:var(--gold);font-weight:300;
+}
+.chip-pulse{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--gold);animation:pulse 2s infinite;
+}
+.chip-icon{font-size:0.85rem}
+
+/* ══════════════════════════════════════════════════
+   STATUS CARD — GLASSMORPHIC
+══════════════════════════════════════════════════ */
+.status-lift{
+  margin:-28px 16px 0;position:relative;z-index:10;
+}
+.status-glass{
+  background:var(--surface);
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  border:1px solid var(--border2);
+  border-radius:var(--r);
+  box-shadow:var(--shadow3);
+  padding:22px;overflow:hidden;
+}
+.status-glass::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,rgba(255,255,255,0.3),transparent);
+}
+[data-theme="dark"] .status-glass{background:rgba(20,17,12,0.9)}
+.status-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:0.65rem;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;
+  margin-bottom:10px;
+}
+.status-tag-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+.status-now{font-size:1.25rem;font-weight:500;color:var(--text);margin-bottom:14px}
+.status-divider{height:1px;background:var(--border);margin-bottom:14px}
+.status-dhikr-text{
+  font-size:1rem;color:var(--gold);font-weight:300;
+  line-height:1.9;text-align:center;direction:rtl;
+}
+.status-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:12px;
+}
+.status-next-lbl{font-size:0.72rem;color:var(--text3)}
+.status-next-val{font-size:0.72rem;color:var(--gold);font-weight:500}
+
+/* ══════════════════════════════════════════════════
+   MULTI-RING DASHBOARD
+══════════════════════════════════════════════════ */
+.dash-section{padding:28px 16px 0}
+.dash-title{
+  text-align:center;font-size:0.68rem;color:var(--text3);
+  letter-spacing:0.14em;text-transform:uppercase;margin-bottom:24px;
+}
+.rings-wrap{
+  display:flex;justify-content:center;align-items:center;
+  position:relative;margin-bottom:20px;
+}
+.multi-ring{position:relative;width:200px;height:200px}
+.multi-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:var(--warm);stroke-width:3}
+.ring-fill{fill:none;stroke-linecap:round;stroke-width:3;transition:stroke-dashoffset 1.4s var(--ease)}
+.ring-gold{stroke:var(--gold)}
+.ring-olive{stroke:var(--olive)}
+.ring-warm{stroke:#b08050}
+.ring-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+}
+.ring-pct{font-size:2.2rem;font-weight:200;color:var(--text);line-height:1}
+.ring-lbl{font-size:0.62rem;color:var(--text3);letter-spacing:0.08em}
+
+.ring-legend{
+  display:flex;gap:16px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;
+}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:0.7rem;color:var(--text2)}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kpi{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+  padding:14px 8px;text-align:center;
+  transition:border-color 0.3s,transform 0.2s;cursor:default;
+}
+.kpi:hover{border-color:var(--border2);transform:translateY(-1px)}
+.kpi-num{font-size:1.6rem;font-weight:200;color:var(--text);display:block;line-height:1}
+.kpi-lbl{font-size:0.6rem;color:var(--text3);display:block;margin-top:3px}
+
+/* ══════════════════════════════════════════════════
+   QUOTE TICKER
+══════════════════════════════════════════════════ */
+.quote-ticker{
+  margin:20px 16px 0;
+  background:linear-gradient(135deg,var(--black) 0%,#1a150a 100%);
+  border-radius:var(--r2);padding:20px;
+  border:1px solid rgba(196,160,90,0.15);
+  position:relative;overflow:hidden;
+}
+.quote-ticker::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,var(--gold),transparent);
+  opacity:0.4;
+}
+.qt-label{font-size:0.6rem;color:var(--gold);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px}
+.qt-text{
+  font-size:1rem;color:#E8E3D4;font-weight:300;line-height:1.9;
+  text-align:center;direction:rtl;
+  animation:fadeIn 0.5s var(--ease);
+}
+.qt-source{font-size:0.7rem;color:var(--gold);margin-top:8px;text-align:center;opacity:0.7}
+
+/* ══════════════════════════════════════════════════
+   SECTION CARDS GRID — ADVANCED
+══════════════════════════════════════════════════ */
+.grid-title{
+  font-size:0.68rem;color:var(--text3);letter-spacing:0.14em;text-transform:uppercase;
+  padding:24px 16px 12px;display:flex;align-items:center;gap:10px;
+}
+.grid-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
+
+.sc{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:24px 16px;text-align:center;cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:transform 0.3s var(--ease),box-shadow 0.3s,border-color 0.3s;
+}
+.sc::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% -20%,rgba(196,160,90,0.12) 0%,transparent 70%);
+  opacity:0;transition:opacity 0.4s;
+}
+.sc:hover,.sc:active{transform:translateY(-3px);box-shadow:var(--shadow3);border-color:var(--border2)}
+.sc:hover::before{opacity:1}
+.sc-accent{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--gold),transparent);
+  opacity:0;transition:opacity 0.4s;
+}
+.sc:hover .sc-accent{opacity:1}
+.sc-icon{font-size:2.2rem;margin-bottom:12px;display:block;filter:drop-shadow(0 0 8px rgba(196,160,90,0.3))}
+.sc-name{font-size:0.95rem;font-weight:500;color:var(--text);display:block;margin-bottom:3px}
+.sc-desc{font-size:0.68rem;color:var(--text3);display:block;font-weight:300}
+.sc-badge{
+  position:absolute;top:12px;right:12px;
+  background:var(--gold);color:#0a0a08;
+  font-size:0.58rem;font-weight:600;padding:2px 7px;border-radius:20px;
+}
+.sc.wide{grid-column:1/-1;display:flex;align-items:center;gap:16px;text-align:right;padding:20px}
+.sc.wide .sc-icon{margin-bottom:0;font-size:2rem}
+.sc.wide-info{flex:1}
+
+/* ══════════════════════════════════════════════════
+   PAGE HEADERS
+══════════════════════════════════════════════════ */
+.ph{
+  background:var(--black);
+  padding:calc(52px + var(--safe-top)) 24px 28px;
+  text-align:center;position:relative;overflow:hidden;
+}
+.ph::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 90% at 50% -20%,rgba(196,160,90,0.09) 0%,transparent 60%);
+}
+.ph-eyebrow{font-size:0.65rem;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:10px;font-weight:300}
+.ph-title{font-size:2rem;font-weight:200;color:#F0EDE5;letter-spacing:0.04em}
+.ph-sub{font-size:0.8rem;color:rgba(196,160,90,0.7);margin-top:6px;font-weight:300;letter-spacing:0.08em}
+.ph-ornament{
+  display:flex;align-items:center;justify-content:center;gap:12px;margin-top:18px;
+}
+.ph-ornament span{height:1px;width:40px;background:var(--gold);opacity:0.3;display:block}
+.ph-ornament i{font-size:0.6rem;color:var(--gold);opacity:0.5;font-style:normal}
+
+/* ══════════════════════════════════════════════════
+   TIMELINE — REFINED
+══════════════════════════════════════════════════ */
+.tl-wrap{padding:28px 16px 0;position:relative}
+.tl-line{
+  position:absolute;right:32px;top:28px;bottom:0;width:1px;
+  background:linear-gradient(to bottom,transparent 0%,var(--gold) 10%,var(--gold) 90%,transparent 100%);
+  opacity:0.15;
+}
+.tl-item{
+  display:flex;gap:14px;margin-bottom:16px;
+  animation:slideInRight 0.5s var(--ease) both;
+}
+.tl-dot-wrap{display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:2px}
+.tl-dot{
+  width:36px;height:36px;border-radius:50%;
+  border:1.5px solid var(--border2);
+  background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;z-index:1;position:relative;
+  flex-shrink:0;
+  transition:all 0.3s;
+}
+.tl-dot.now{
+  background:var(--gold);border-color:var(--gold);
+  box-shadow:0 0 20px var(--gold-glow),0 0 40px rgba(196,160,90,0.1);
+  animation:nowPulse 3s ease-in-out infinite;
+}
+.tl-dot.past{opacity:0.4;filter:grayscale(0.5)}
+.tl-box{
+  flex:1;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:14px 16px;margin-bottom:2px;
+  transition:border-color 0.3s;
+}
+.tl-box.now{border-color:var(--border2);background:rgba(196,160,90,0.04)}
+.tl-box.past{opacity:0.55}
+.tl-when{font-size:0.68rem;color:var(--gold);letter-spacing:0.1em;font-weight:500;margin-bottom:4px}
+.tl-name{font-size:0.98rem;font-weight:500;color:var(--text);margin-bottom:5px}
+.tl-detail{font-size:0.78rem;color:var(--text2);line-height:1.7;font-weight:300}
+.tl-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.tl-tag{
+  font-size:0.62rem;padding:3px 9px;border-radius:20px;
+  background:rgba(196,160,90,0.08);color:var(--gold);
+  border:1px solid rgba(196,160,90,0.18);
+}
+.tl-tag.imp{background:rgba(196,160,90,0.15);font-weight:500}
+.tl-now-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:0.62rem;padding:3px 9px;border-radius:20px;
+  background:var(--gold);color:#0a0a08;font-weight:600;margin-top:8px;
+}
+
+/* ══════════════════════════════════════════════════
+   AZKAR — BEAUTIFUL CARDS
+══════════════════════════════════════════════════ */
+.cat-scroll{
+  display:flex;gap:8px;padding:18px 16px 8px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-pill{
+  flex-shrink:0;padding:8px 20px;border-radius:30px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text2);font-size:0.78rem;
+  transition:all 0.3s var(--ease);white-space:nowrap;
+  font-family:var(--font);
+}
+.cat-pill.on{background:var(--gold);border-color:var(--gold);color:#0a0a08;font-weight:500}
+
+.azkar-feed{padding:8px 16px;display:flex;flex-direction:column;gap:10px}
+.zkr{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:0;overflow:hidden;
+  transition:border-color 0.4s,box-shadow 0.3s;
+}
+.zkr.done{border-color:var(--border2);box-shadow:0 0 20px rgba(196,160,90,0.08)}
+.zkr-head{
+  padding:18px 18px 12px;
+  border-bottom:1px solid var(--border);
+}
+.zkr-badge{
+  font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.zkr-badge::before{content:'';width:16px;height:1px;background:var(--gold);opacity:0.5}
+.zkr-text{
+  font-size:1.1rem;line-height:2;color:var(--text);
+  text-align:center;direction:rtl;font-weight:400;
+}
+.zkr.done .zkr-text{color:var(--text2)}
+.zkr-foot{
+  padding:12px 18px;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(0,0,0,0.02);
+}
+[data-theme="dark"] .zkr-foot{background:rgba(255,255,255,0.02)}
+.zkr-prog{font-size:0.75rem;color:var(--text3)}
+.zkr-prog span{color:var(--gold);font-weight:500}
+.zkr-actions{display:flex;align-items:center;gap:10px}
+.zkr-btn{
+  width:44px;height:44px;border-radius:50%;
+  border:1.5px solid var(--border2);
+  background:transparent;color:var(--gold);font-size:1.3rem;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  transition:all 0.2s var(--ease);
+}
+.zkr-btn:active{transform:scale(0.92)}
+.zkr-btn.full{border-color:var(--gold);background:var(--gold);color:#0a0a08}
+.zkr-reset{
+  font-size:0.68rem;color:var(--text3);
+  background:transparent;border:none;padding:4px 8px;
+  transition:color 0.2s;
+}
+.zkr-reset:hover{color:var(--gold)}
+.zkr-bar{height:2px;background:var(--warm)}
+.zkr-bar-fill{height:100%;background:linear-gradient(to right,var(--gold3),var(--gold));transition:width 0.5s var(--ease)}
+
+/* ══════════════════════════════════════════════════
+   TASBEEH — PREMIUM CIRCULAR UI
+══════════════════════════════════════════════════ */
+.tsb-page{
+  min-height:100svh;display:flex;flex-direction:column;
+  align-items:center;padding:0 24px calc(100px + var(--safe-bot));
+  padding-top:0;
+}
+.tsb-hero{width:100%;background:var(--black);padding:calc(52px + var(--safe-top)) 24px 32px;text-align:center;margin-bottom:32px}
+.tsb-modes{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:32px}
+.tsb-mode{
+  padding:8px 18px;border-radius:24px;border:1px solid var(--border);
+  background:transparent;color:var(--text2);font-size:0.75rem;font-family:var(--font);
+  transition:all 0.3s;
+}
+.tsb-mode.on{background:var(--gold);border-color:var(--gold);color:#0a0a08;font-weight:500}
+
+.tsb-dhikr-txt{
+  font-size:1.2rem;color:var(--gold);font-weight:300;
+  text-align:center;line-height:1.9;margin-bottom:36px;
+  min-height:56px;transition:opacity 0.3s;
+}
+.tsb-arena{position:relative;margin-bottom:36px}
+.tsb-outer{
+  width:240px;height:240px;border-radius:50%;
+  background:var(--bg2);border:1px solid var(--border2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:box-shadow 0.3s,transform 0.15s;user-select:none;-webkit-user-select:none;
+}
+.tsb-outer::before{
+  content:'';position:absolute;inset:10px;border-radius:50%;
+  border:1px solid rgba(196,160,90,0.1);pointer-events:none;
+}
+.tsb-outer::after{
+  content:'';position:absolute;inset:20px;border-radius:50%;
+  border:1px solid rgba(196,160,90,0.06);pointer-events:none;
+}
+.tsb-outer:active{transform:scale(0.96)}
+.tsb-outer.flash{box-shadow:0 0 60px var(--gold-glow),0 0 120px rgba(196,160,90,0.08)}
+.tsb-num{font-size:5rem;font-weight:100;color:var(--text);line-height:1;z-index:1}
+.tsb-tgt{font-size:0.72rem;color:var(--text3);z-index:1;margin-top:4px}
+.tsb-arc{position:absolute;inset:0;pointer-events:none}
+.tsb-arc svg{width:100%;height:100%;transform:rotate(-90deg)}
+.tsb-arc-track{fill:none;stroke:var(--warm);stroke-width:2.5}
+.tsb-arc-fill{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-linecap:round;transition:stroke-dashoffset 0.4s}
+
+.tsb-stats{
+  display:flex;gap:24px;justify-content:center;margin-bottom:24px;
+}
+.tsb-stat{text-align:center}
+.tsb-stat-num{font-size:1.8rem;font-weight:200;color:var(--text);display:block}
+.tsb-stat-lbl{font-size:0.65rem;color:var(--text3);display:block}
+
+.tsb-controls{display:flex;gap:12px;align-items:center;justify-content:center}
+.tsb-ctrl{
+  padding:10px 24px;border-radius:24px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text2);font-size:0.8rem;font-family:var(--font);
+  transition:all 0.3s;
+}
+.tsb-ctrl:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ══════════════════════════════════════════════════
+   QURAN — SMART PLAN SELECTOR
+══════════════════════════════════════════════════ */
+.qr-plans{padding:16px;display:flex;flex-direction:column;gap:10px}
+.qr-plan{
+  background:var(--bg2);border:2px solid var(--border);border-radius:var(--r2);
+  padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;
+  transition:all 0.3s var(--ease);
+}
+.qr-plan:hover{border-color:var(--border2)}
+.qr-plan.on{border-color:var(--gold);background:rgba(196,160,90,0.04)}
+.qr-plan-icon{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--bg);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;flex-shrink:0;
+  transition:border-color 0.3s;
+}
+.qr-plan.on .qr-plan-icon{border-color:var(--gold)}
+.qr-plan-info{flex:1}
+.qr-plan-name{font-size:1rem;font-weight:500;color:var(--text);margin-bottom:3px}
+.qr-plan-meta{font-size:0.73rem;color:var(--text3);font-weight:300}
+.qr-plan-check{
+  width:24px;height:24px;border-radius:50%;
+  border:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  color:transparent;font-size:0.7rem;flex-shrink:0;
+  transition:all 0.3s;
+}
+.qr-plan.on .qr-plan-check{background:var(--gold);border-color:var(--gold);color:#0a0a08}
+
+.qr-progress-area{padding:0 16px 24px}
+.qr-ring-row{display:flex;align-items:center;justify-content:center;gap:32px;padding:24px 0}
+.qr-ring-wrap{position:relative;width:140px;height:140px;flex-shrink:0}
+.qr-ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.qr-info-stack{display:flex;flex-direction:column;gap:12px}
+.qr-info-item{display:flex;gap:8px;align-items:flex-start}
+.qr-info-icon{font-size:1rem;margin-top:1px}
+.qr-info-label{font-size:0.75rem;color:var(--text3);font-weight:300;line-height:1.5}
+.qr-info-val{font-size:0.85rem;color:var(--text);font-weight:400}
+
+.qr-pages-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qr-page{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+  padding:14px;display:flex;align-items:center;justify-content:space-between;
+  transition:border-color 0.3s;
+}
+.qr-page.done{border-color:var(--border2);background:rgba(196,160,90,0.04)}
+.qr-page-info{flex:1}
+.qr-page-num{font-size:0.9rem;font-weight:400;color:var(--text)}
+.qr-page-sub{font-size:0.67rem;color:var(--text3);margin-top:2px}
+.qr-chk{
+  width:30px;height:30px;border-radius:50%;
+  border:1.5px solid var(--border2);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  color:transparent;font-size:0.85rem;
+  transition:all 0.3s var(--ease);cursor:pointer;flex-shrink:0;
+}
+.qr-page.done .qr-chk{background:var(--gold);border-color:var(--gold);color:#0a0a08}
+
+/* ══════════════════════════════════════════════════
+   DUAS — RICH LIBRARY
+══════════════════════════════════════════════════ */
+.duas-feed{padding:8px 16px;display:flex;flex-direction:column;gap:10px}
+.dua-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;
+  transition:border-color 0.3s,box-shadow 0.3s;
+}
+.dua-card.fav{border-color:var(--border2);box-shadow:0 4px 20px rgba(196,160,90,0.08)}
+.dua-card-head{
+  padding:14px 18px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.dua-cat{font-size:0.62rem;color:var(--gold);letter-spacing:0.14em;text-transform:uppercase;font-weight:400}
+.dua-source{font-size:0.65rem;color:var(--text3);font-weight:300}
+.dua-body{padding:18px;text-align:center}
+.dua-arabic{
+  font-size:1.1rem;line-height:2.1;color:var(--text);
+  font-weight:400;direction:rtl;margin-bottom:14px;
+}
+.dua-trans{
+  font-size:0.78rem;color:var(--text2);line-height:1.8;
+  font-weight:300;text-align:right;direction:rtl;
+  padding-top:12px;border-top:1px solid var(--border);
+}
+.dua-foot{
+  padding:10px 18px;display:flex;gap:8px;justify-content:flex-end;
+  background:rgba(0,0,0,0.02);
+}
+[data-theme="dark"] .dua-foot{background:rgba(255,255,255,0.02)}
+.dua-act{
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text3);font-size:0.85rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.3s;cursor:pointer;
+}
+.dua-act:hover,.dua-act.on{border-color:var(--gold);color:var(--gold)}
+
+/* ══════════════════════════════════════════════════
+   PRAYER TIMES — GORGEOUS
+══════════════════════════════════════════════════ */
+.pr-next-card{
+  margin:16px;
+  background:var(--black);border-radius:var(--r);
+  padding:24px;text-align:center;overflow:hidden;
+  position:relative;border:1px solid rgba(196,160,90,0.12);
+}
+.pr-next-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 80% at 50% 0%,rgba(196,160,90,0.08) 0%,transparent 70%);
+}
+.pr-next-eye{font-size:0.65rem;color:var(--gold);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:8px}
+.pr-next-name{font-size:2.6rem;font-weight:100;color:#F0EDE5;line-height:1;margin-bottom:8px}
+.pr-next-in{font-size:0.85rem;color:rgba(196,160,90,0.7);font-weight:300}
+
+.pr-hijri{
+  margin:0 16px 16px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pr-hijri-ar{font-size:0.9rem;color:var(--text);font-weight:400}
+.pr-hijri-en{font-size:0.75rem;color:var(--text3)}
+
+.pr-list{padding:0 16px;display:flex;flex-direction:column;gap:6px}
+.pr-item{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:16px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:all 0.3s;
+}
+.pr-item.cur{border-color:var(--gold);background:rgba(196,160,90,0.05)}
+.pr-item.past{opacity:0.5}
+.pr-left{display:flex;align-items:center;gap:12px}
+.pr-icon{font-size:1.1rem;width:32px;text-align:center}
+.pr-name{font-size:1rem;font-weight:400;color:var(--text)}
+.pr-right{display:flex;align-items:center;gap:10px}
+.pr-time{font-size:0.9rem;color:var(--text2);font-weight:300;font-feature-settings:'tnum'}
+.pr-now{font-size:0.62rem;background:var(--gold);color:#0a0a08;padding:3px 10px;border-radius:20px;font-weight:500}
+.pr-check{
+  width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);
+  background:transparent;color:transparent;font-size:0.75rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.3s;
+}
+.pr-check.done{background:var(--olive);border-color:var(--olive);color:#fff}
+
+/* ══════════════════════════════════════════════════
+   KHALWA (FOCUS)
+══════════════════════════════════════════════════ */
+#khalwa{
+  display:none;position:fixed;inset:0;z-index:800;
+  background:#04030200;
+  flex-direction:column;align-items:center;justify-content:center;gap:40px;
+  overflow:hidden;
+}
+#khalwa.on{display:flex}
+.kh-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 50%,#0e0b06 0%,#030302 100%);
+}
+.kh-noise{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.6;
+}
+.kh-glow{
+  position:absolute;width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(196,160,90,0.05) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:spGlowPulse 5s ease-in-out infinite;
+}
+.kh-close{
+  position:absolute;top:calc(20px + var(--safe-top));left:20px;z-index:10;
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid rgba(196,160,90,0.2);background:transparent;
+  color:rgba(196,160,90,0.5);font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.3s;cursor:pointer;
+}
+.kh-close:hover{border-color:var(--gold);color:var(--gold)}
+.kh-dhikr-pick{
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;z-index:5;
+}
+.kh-pick-btn{
+  padding:6px 14px;border-radius:20px;
+  border:1px solid rgba(196,160,90,0.2);background:transparent;
+  color:rgba(196,160,90,0.5);font-size:0.7rem;font-family:var(--font);
+  cursor:pointer;transition:all 0.3s;
+}
+.kh-pick-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(196,160,90,0.08)}
+.kh-ring{
+  position:relative;width:220px;height:220px;z-index:5;
+  cursor:pointer;-webkit-user-select:none;user-select:none;
+}
+.kh-ring-svg{position:absolute;inset:0;pointer-events:none}
+.kh-ring-svg svg{width:100%;height:100%;transform:rotate(-90deg)}
+.kh-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;
+}
+.kh-num{font-size:5rem;font-weight:100;color:rgba(240,237,229,0.85);line-height:1}
+.kh-label{font-size:0.7rem;color:rgba(196,160,90,0.5);letter-spacing:0.1em}
+.kh-circles{position:absolute;inset:0;pointer-events:none}
+.kh-c{
+  position:absolute;inset:0;border-radius:50%;border:1px solid rgba(196,160,90,0.08);
+}
+.kh-txt{
+  font-size:1.3rem;color:rgba(196,160,90,0.7);font-weight:300;
+  text-align:center;line-height:1.9;max-width:260px;z-index:5;
+}
+.kh-session{font-size:0.7rem;color:rgba(196,160,90,0.35);z-index:5;letter-spacing:0.1em}
+.breathe{
+  position:absolute;inset:16px;border-radius:50%;
+  background:radial-gradient(circle,rgba(196,160,90,0.04) 0%,transparent 70%);
+  animation:breathAnim 6s ease-in-out infinite;pointer-events:none;
+}
+
+/* ══════════════════════════════════════════════════
+   STATS PAGE
+══════════════════════════════════════════════════ */
+.stats-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px}
+.st-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px 16px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.st-card.wide{grid-column:1/-1}
+.st-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:0.3;
+}
+.st-num{font-size:2.6rem;font-weight:100;color:var(--text);display:block;line-height:1}
+.st-lbl{font-size:0.68rem;color:var(--text3);display:block;margin-top:5px}
+.st-trend{font-size:0.65rem;color:var(--olive);margin-top:4px;display:block}
+
+.activity-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:3px;
+  padding:0 16px 16px;
+}
+.act-cell{
+  aspect-ratio:1;border-radius:3px;
+  background:var(--warm);
+  transition:background 0.3s;
+}
+.act-cell.l1{background:rgba(196,160,90,0.2)}
+.act-cell.l2{background:rgba(196,160,90,0.45)}
+.act-cell.l3{background:rgba(196,160,90,0.7)}
+.act-cell.l4{background:var(--gold)}
+
+.bar-section{padding:0 16px 16px}
+.bar-row{margin-bottom:14px}
+.bar-head{display:flex;justify-content:space-between;font-size:0.73rem;color:var(--text2);margin-bottom:6px}
+.bar-pct{color:var(--gold);font-weight:500}
+.bar-track{height:6px;background:var(--warm);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.5s var(--ease)}
+.bar-gold{background:linear-gradient(to right,var(--gold3),var(--gold))}
+.bar-olive{background:linear-gradient(to right,#3a4a2a,var(--olive))}
+.bar-warm2{background:linear-gradient(to right,#6a4020,#b07040)}
+
+.insights-card{
+  margin:0 16px 16px;background:var(--black);border-radius:var(--r);
+  padding:20px;border:1px solid rgba(196,160,90,0.1);
+}
+.insights-head{font-size:0.65rem;color:var(--gold);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px}
+.insight-item{
+  display:flex;align-items:flex-start;gap:10px;
+  margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(196,160,90,0.08);
+}
+.insight-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.insight-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.insight-text{font-size:0.8rem;color:#D0C8B4;line-height:1.6;font-weight:300}
+
+/* ══════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════ */
+#toast-wrap{
+  position:fixed;bottom:calc(96px + var(--safe-bot));left:50%;transform:translateX(-50%);
+  z-index:900;display:flex;flex-direction:column;gap:8px;align-items:center;
+  pointer-events:none;
+}
+.toast-msg{
+  background:var(--black);color:var(--bg);
+  padding:10px 22px;border-radius:30px;
+  font-size:0.8rem;border:1px solid rgba(196,160,90,0.2);
+  box-shadow:var(--shadow3);
+  animation:toastIn 0.35s var(--ease) both;white-space:nowrap;
+}
+.toast-msg.out{animation:toastOut 0.35s var(--ease) both}
+
+/* ══════════════════════════════════════════════════
+   SETTINGS PAGE
+══════════════════════════════════════════════════ */
+.settings-list{padding:16px;display:flex;flex-direction:column;gap:8px}
+.setting-group{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;
+}
+.setting-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px;border-bottom:1px solid var(--border);
+}
+.setting-item:last-child{border-bottom:none}
+.setting-left{display:flex;align-items:center;gap:12px}
+.setting-icon{font-size:1.2rem;width:24px;text-align:center}
+.setting-name{font-size:0.92rem;color:var(--text);font-weight:400}
+.setting-desc{font-size:0.7rem;color:var(--text3);margin-top:2px}
+.setting-right{}
+.toggle{
+  width:46px;height:26px;border-radius:13px;
+  background:var(--warm);border:none;cursor:pointer;
+  position:relative;transition:background 0.3s;flex-shrink:0;
+}
+.toggle.on{background:var(--gold)}
+.toggle::after{
+  content:'';position:absolute;top:3px;right:3px;
+  width:20px;height:20px;border-radius:50%;background:#fff;
+  transition:transform 0.3s var(--ease);
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle.on::after{transform:translateX(-20px)}
+.setting-val{font-size:0.8rem;color:var(--gold);font-weight:500}
+
+.about-card{
+  margin:0 16px 16px;background:var(--black);border-radius:var(--r);
+  padding:24px;text-align:center;border:1px solid rgba(196,160,90,0.1);
+}
+.about-logo{font-size:3rem;margin-bottom:12px}
+.about-name{font-size:1.5rem;font-weight:200;color:#F0EDE5;margin-bottom:6px}
+.about-ver{font-size:0.72rem;color:var(--gold);letter-spacing:0.1em;margin-bottom:16px}
+.about-desc{font-size:0.8rem;color:rgba(196,160,90,0.6);line-height:1.7;font-weight:300}
+.danger-btn{
+  margin:0 16px 16px;padding:14px;border-radius:var(--r2);
+  border:1px solid rgba(200,80,60,0.2);background:rgba(200,80,60,0.05);
+  width:calc(100% - 32px);
+  color:rgba(200,100,80,0.8);font-family:var(--font);font-size:0.85rem;
+  cursor:pointer;transition:all 0.3s;
+}
+.danger-btn:hover{border-color:rgba(200,80,60,0.4);background:rgba(200,80,60,0.1)}
+
+/* ══════════════════════════════════════════════════
+   KEYFRAMES
+══════════════════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.75)}}
+@keyframes spGlowPulse{0%,100%{opacity:0.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
+@keyframes nowPulse{0%,100%{box-shadow:0 0 20px var(--gold-glow)}50%{box-shadow:0 0 35px rgba(196,160,90,0.4)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@keyframes rippleOut{to{transform:scale(4);opacity:0}}
+@keyframes breathAnim{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.2);opacity:1}}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes toastOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(12px)}}
+@keyframes particleRise{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:0.6}90%{opacity:0.2}100%{transform:translateY(-80px) translateX(var(--dx,10px));opacity:0}}
+@keyframes countPop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+/* Ripple */
+.rip{
+  position:absolute;width:20px;height:20px;border-radius:50%;
+  background:rgba(196,160,90,0.25);transform:scale(0);
+  animation:rippleOut 0.7s var(--ease) forwards;pointer-events:none;
+}
+
+/* Responsive */
+@media(min-width:480px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:680px){
+  #app,#khalwa,.nav-bar{max-width:480px;margin-left:auto;margin-right:auto}
+  .nav-bar{left:50%;right:auto;transform:translateX(-50%)}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div id="splash">
+  <div class="sp-bg"></div>
+  <div class="sp-noise"></div>
+  <div class="sp-glow"></div>
+  <!-- Particle field -->
+  <div id="sp-particles"></div>
+  <div class="sp-mandala">
+    <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(90,90)">
+        <circle r="82" fill="none" stroke="rgba(196,160,90,0.12)" stroke-width="1"/>
+        <circle r="68" fill="none" stroke="rgba(196,160,90,0.18)" stroke-width="0.8" stroke-dasharray="4 8"/>
+        <circle r="54" fill="none" stroke="rgba(196,160,90,0.1)" stroke-width="1"/>
+        <circle r="36" fill="none" stroke="rgba(196,160,90,0.25)" stroke-width="0.8"/>
+        <circle r="18" fill="none" stroke="rgba(196,160,90,0.35)" stroke-width="1"/>
+        <circle r="4" fill="rgba(196,160,90,0.5)"/>
+        <!-- 8 petals -->
+        <g id="petals">
+          <path d="M0,-54 Q18,-30 0,-18 Q-18,-30 0,-54" fill="none" stroke="rgba(196,160,90,0.2)" stroke-width="0.8"/>
+          <path d="M0,-54 Q18,-30 0,-18 Q-18,-30 0,-54" fill="none" stroke="rgba(196,160,90,0.2)" stroke-width="0.8" transform="rotate(45)"/>
+          <path d="M0,-54 Q18,-30 0,-18 Q-18,-30 0,-54" fill="none" stroke="rgba(196,160,90,0.2)" stroke-width="0.8" transform="rotate(90)"/>
+          <path d="M0,-54 Q18,-30 0,-18 Q-18,-30 0,-54" fill="none" stroke="rgba(196,160,90,0.2)" stroke-width="0.8" transform="rotate(135)"/>
+          <path d="M0,-54 Q18,-30 0,-18 Q-18,-30 0,-54" fill="none" stroke="rgba(196,160,90,0.2)" stroke-width="0.8" transform="rotate(180)"/>
+          <path d="M0,-54 Q18,-30 0,-18 Q-18,-30 0,-54" fill="none" stroke="rgba(196,160,90,0.2)" stroke-width="0.8" transform="rotate(225)"/>
+          <path d="M0,-54 Q18,-30 0,-18 Q-18,-30 0,-54" fill="none" stroke="rgba(196,160,90,0.2)" stroke-width="0.8" transform="rotate(270)"/>
+          <path d="M0,-54 Q18,-30 0,-18 Q-18,-30 0,-54" fill="none" stroke="rgba(196,160,90,0.2)" stroke-width="0.8" transform="rotate(315)"/>
+        </g>
+        <!-- Star -->
+        <polygon points="0,-38 9,-12 36,-12 15,5 23,31 0,15 -23,31 -15,5 -36,-12 -9,-12"
+          fill="none" stroke="rgba(196,160,90,0.3)" stroke-width="0.8"/>
+        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" dur="60s" repeatCount="indefinite" additive="sum"/>
+      </g>
+      <g transform="translate(90,90)">
+        <circle r="82" fill="none" stroke="rgba(196,160,90,0.06)" stroke-width="1"
+          stroke-dasharray="2 12">
+          <animateTransform attributeName="transform" type="rotate" values="360 0 0;0 0 0" dur="40s" repeatCount="indefinite" additive="sum"/>
+        </circle>
+      </g>
+    </svg>
+  </div>
+  <h1 class="sp-title">رفيق عرفة</h1>
+  <p class="sp-sub">رحلة إيمانية ليوم عرفة المبارك</p>
+  <div class="sp-line"></div>
+  <button class="sp-btn" onclick="startApp()">ابدأ رحلتك</button>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast-wrap"></div>
+
+<!-- ══ KHALWA ══ -->
+<div id="khalwa">
+  <div class="kh-bg"></div>
+  <div class="kh-noise"></div>
+  <div class="kh-glow"></div>
+  <button class="kh-close" onclick="closeKhalwa()">✕</button>
+  <div class="kh-dhikr-pick" id="kh-picks"></div>
+  <div class="kh-ring" id="kh-ring" onclick="khalwaTap(event)">
+    <div class="kh-circles">
+      <div class="kh-c" style="inset:0"></div>
+      <div class="kh-c" style="inset:18px;animation:breathAnim 6s 0.5s ease-in-out infinite"></div>
+      <div class="kh-c" style="inset:36px;animation:breathAnim 6s 1s ease-in-out infinite"></div>
+    </div>
+    <div class="breathe"></div>
+    <div class="kh-ring-svg">
+      <svg viewBox="0 0 220 220">
+        <circle fill="none" stroke="rgba(196,160,90,0.08)" stroke-width="3" cx="110" cy="110" r="100"/>
+        <circle fill="none" stroke="rgba(196,160,90,0.6)" stroke-width="3" stroke-linecap="round"
+          cx="110" cy="110" r="100"
+          stroke-dasharray="628" id="kh-arc"
+          stroke-dashoffset="628"
+          style="transition:stroke-dashoffset 0.4s;transform-origin:center;transform:rotate(-90deg)"/>
+      </svg>
+    </div>
+    <div class="kh-center">
+      <div class="kh-num" id="kh-num">0</div>
+      <div class="kh-label">اضغط للتسبيح</div>
+    </div>
+  </div>
+  <div class="kh-txt" id="kh-txt">سُبْحَانَ اللهِ وَبِحَمْدِهِ</div>
+  <div class="kh-session" id="kh-ses">جلسة الخلوة: 0 تسبيحة</div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+
+  <!-- Floating FABs -->
+  <div class="fab-cluster">
+    <button class="fab" id="theme-fab" onclick="toggleTheme()" title="المظهر">🌙</button>
+    <button class="fab" onclick="openKhalwa()" title="الخلوة">🕯️</button>
+  </div>
+
+  <!-- ════ HOME ════ -->
+  <div class="pg on" id="pg-home">
+    <div class="hero">
+      <div class="hero-ornament">
+        <div class="hero-line l"></div>
+        <div class="hero-diamond"></div>
+        <div class="hero-line"></div>
+      </div>
+      <div class="hero-time">
+        <span class="hero-ampm" id="h-ampm"></span><span id="h-clock">--:--</span>
+      </div>
+      <div class="hero-date" id="h-date">يوم عرفة — ٩ ذو الحجة</div>
+      <div class="hero-chips">
+        <div class="chip"><div class="chip-pulse"></div><span id="h-mag">يُحسب...</span></div>
+        <div class="chip"><span class="chip-icon">🕌</span><span id="h-prayer">--</span></div>
+        <div class="chip"><span class="chip-icon">📅</span><span id="h-hday">٩ ذو الحجة</span></div>
+      </div>
+    </div>
+
+    <div class="status-lift">
+      <div class="status-glass">
+        <div class="status-tag"><div class="status-tag-dot"></div>الحال الآن</div>
+        <div class="status-now" id="s-now">يُحدَّث...</div>
+        <div class="status-divider"></div>
+        <div class="status-dhikr-text" id="s-dhikr">—</div>
+        <div class="status-meta">
+          <div class="status-next-lbl" id="s-next-lbl">التالي:</div>
+          <div class="status-next-val" id="s-next-val">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-title">لوحة التقدم</div>
+      <div class="rings-wrap">
+        <div class="multi-ring">
+          <svg viewBox="0 0 200 200">
+            <circle class="ring-track" cx="100" cy="100" r="88"/>
+            <circle class="ring-track" cx="100" cy="100" r="72"/>
+            <circle class="ring-track" cx="100" cy="100" r="56"/>
+            <circle class="ring-fill ring-gold" cx="100" cy="100" r="88" id="r-day"
+              stroke-dasharray="553" stroke-dashoffset="553"/>
+            <circle class="ring-fill ring-olive" cx="100" cy="100" r="72" id="r-azkar"
+              stroke-dasharray="452" stroke-dashoffset="452"/>
+            <circle class="ring-fill ring-warm" cx="100" cy="100" r="56" id="r-quran"
+              stroke-dasharray="352" stroke-dashoffset="352"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-pct" id="r-pct">0%</div>
+            <div class="ring-lbl">اليوم</div>
+          </div>
+        </div>
+      </div>
+      <div class="ring-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>يوم عرفة</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--olive)"></div>الأذكار</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#b08050"></div>القرآن</div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi"><span class="kpi-num" id="kpi-az">0</span><span class="kpi-lbl">ذكر</span></div>
+        <div class="kpi"><span class="kpi-num" id="kpi-ts">0</span><span class="kpi-lbl">تسبيحة</span></div>
+        <div class="kpi"><span class="kpi-num" id="kpi-pg">0</span><span class="kpi-lbl">صفحة</span></div>
+        <div class="kpi"><span class="kpi-num" id="kpi-pr">0</span><span class="kpi-lbl">صلاة</span></div>
+      </div>
+    </div>
+
+    <div class="quote-ticker" id="quote-ticker">
+      <div class="qt-label">اقتباس اليوم</div>
+      <div class="qt-text" id="qt-text">—</div>
+      <div class="qt-source" id="qt-src"></div>
+    </div>
+
+    <div class="grid-title">أقسام التطبيق</div>
+    <div class="sc-grid">
+      <div class="sc" onclick="goPage('azkar')">
+        <div class="sc-accent"></div>
+        <span class="sc-icon">📿</span>
+        <span class="sc-name">الأذكار</span>
+        <span class="sc-desc">أذكار الصباح والمساء</span>
+      </div>
+      <div class="sc" onclick="goPage('tasbeeh')">
+        <div class="sc-accent"></div>
+        <span class="sc-icon">🔮</span>
+        <span class="sc-name">السبحة</span>
+        <span class="sc-desc">عداد التسبيح الذكي</span>
+      </div>
+      <div class="sc" onclick="goPage('quran')">
+        <div class="sc-accent"></div>
+        <span class="sc-icon">📖</span>
+        <span class="sc-name">القرآن</span>
+        <span class="sc-desc">ورد اليوم المقدس</span>
+      </div>
+      <div class="sc" onclick="goPage('duas')">
+        <div class="sc-accent"></div>
+        <span class="sc-icon">🤲</span>
+        <span class="sc-name">الأدعية</span>
+        <span class="sc-desc">مكتبة الأدعية المأثورة</span>
+      </div>
+      <div class="sc wide" onclick="goPage('prayer')">
+        <div class="sc-accent"></div>
+        <span class="sc-icon" style="font-size:2.6rem">🕌</span>
+        <div class="sc.wide-info" style="flex:1;text-align:right">
+          <span class="sc-name">مواقيت الصلاة</span>
+          <span class="sc-desc" style="display:block;margin-top:3px">القاهرة — يوم عرفة المبارك</span>
+        </div>
+      </div>
+      <div class="sc" onclick="goPage('stats')">
+        <div class="sc-accent"></div>
+        <span class="sc-icon">✨</span>
+        <span class="sc-name">إحصائياتي</span>
+        <span class="sc-desc">تقدمك في يوم عرفة</span>
+      </div>
+      <div class="sc" onclick="goPage('settings')">
+        <div class="sc-accent"></div>
+        <span class="sc-icon">⚙️</span>
+        <span class="sc-name">الإعدادات</span>
+        <span class="sc-desc">تخصيص التطبيق</span>
+      </div>
+    </div>
+    <div style="height:24px"></div>
+  </div>
+
+  <!-- ════ TIMELINE ════ -->
+  <div class="pg" id="pg-timeline">
+    <div class="ph">
+      <div class="ph-eyebrow">برنامجك الإيماني</div>
+      <div class="ph-title">خطة يوم عرفة</div>
+      <div class="ph-sub">من الفجر حتى فجر العيد · بتوقيت القاهرة</div>
+      <div class="ph-ornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="tl-wrap" id="tl-wrap"><div class="tl-line"></div></div>
+  </div>
+
+  <!-- ════ AZKAR ════ -->
+  <div class="pg" id="pg-azkar">
+    <div class="ph">
+      <div class="ph-eyebrow">أذكار يوم عرفة</div>
+      <div class="ph-title">الأذكار</div>
+      <div class="ph-sub">اذكر الله كثيرًا في هذا اليوم العظيم</div>
+      <div class="ph-ornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="cat-scroll" id="az-cats"></div>
+    <div class="azkar-feed" id="az-feed"></div>
+  </div>
+
+  <!-- ════ TASBEEH ════ -->
+  <div class="pg" id="pg-tasbeeh">
+    <div class="tsb-page">
+      <div class="tsb-hero" style="width:100%;margin-bottom:28px">
+        <div class="ph-eyebrow">عداد التسبيح</div>
+        <div class="ph-title" style="color:#F0EDE5">السبحة</div>
+        <div class="ph-sub">ذكر الله يُطمئن القلوب</div>
+      </div>
+      <div class="tsb-modes" id="tsb-modes"></div>
+      <div class="tsb-dhikr-txt" id="tsb-txt">سُبْحَانَ اللهِ</div>
+      <div class="tsb-arena">
+        <div class="tsb-outer" id="tsb-circle" onclick="tsbTap(event)">
+          <div class="tsb-arc">
+            <svg viewBox="0 0 240 240">
+              <circle class="tsb-arc-track" cx="120" cy="120" r="108"/>
+              <circle class="tsb-arc-fill" cx="120" cy="120" r="108" id="tsb-arc"
+                stroke-dasharray="679" stroke-dashoffset="679"/>
+            </svg>
+          </div>
+          <div class="tsb-num" id="tsb-num">0</div>
+          <div class="tsb-tgt" id="tsb-tgt">اضغط للتسبيح</div>
+        </div>
+      </div>
+      <div class="tsb-stats">
+        <div class="tsb-stat">
+          <span class="tsb-stat-num" id="tsb-total">0</span>
+          <span class="tsb-stat-lbl">الجلسة</span>
+        </div>
+        <div class="tsb-stat">
+          <span class="tsb-stat-num" id="tsb-rounds">0</span>
+          <span class="tsb-stat-lbl">جولة</span>
+        </div>
+        <div class="tsb-stat">
+          <span class="tsb-stat-num" id="tsb-all">0</span>
+          <span class="tsb-stat-lbl">الكل</span>
+        </div>
+      </div>
+      <div class="tsb-controls">
+        <button class="tsb-ctrl" onclick="tsbReset()">إعادة تعيين</button>
+        <button class="tsb-ctrl" onclick="tsbNewSession()">جلسة جديدة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ QURAN ════ -->
+  <div class="pg" id="pg-quran">
+    <div class="ph">
+      <div class="ph-eyebrow">ورد يوم عرفة</div>
+      <div class="ph-title">القرآن الكريم</div>
+      <div class="ph-sub">اختر خطة الورد اليومي</div>
+      <div class="ph-ornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="qr-plans" id="qr-plans"></div>
+    <div class="qr-progress-area">
+      <div class="dash-title" style="padding-top:8px">تقدم الورد</div>
+      <div class="qr-ring-row">
+        <div class="qr-ring-wrap">
+          <svg viewBox="0 0 140 140">
+            <circle fill="none" stroke="var(--warm)" stroke-width="3" cx="70" cy="70" r="62"/>
+            <circle fill="none" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"
+              cx="70" cy="70" r="62" stroke-dasharray="390" id="qr-ring"
+              stroke-dashoffset="390" style="transition:stroke-dashoffset 1s var(--ease)"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-pct" id="qr-pct">0%</div>
+            <div class="ring-lbl">مكتمل</div>
+          </div>
+        </div>
+        <div class="qr-info-stack" id="qr-info"></div>
+      </div>
+      <div class="qr-pages-grid" id="qr-pages"></div>
+    </div>
+  </div>
+
+  <!-- ════ DUAS ════ -->
+  <div class="pg" id="pg-duas">
+    <div class="ph">
+      <div class="ph-eyebrow">يوم الدعاء العظيم</div>
+      <div class="ph-title">الأدعية المأثورة</div>
+      <div class="ph-sub">أكثر من الدعاء في هذا اليوم الكريم</div>
+      <div class="ph-ornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="cat-scroll" id="du-cats"></div>
+    <div class="duas-feed" id="du-feed"></div>
+  </div>
+
+  <!-- ════ PRAYER ════ -->
+  <div class="pg" id="pg-prayer">
+    <div class="ph">
+      <div class="ph-eyebrow">مواقيت الصلاة</div>
+      <div class="ph-title">الصلوات</div>
+      <div class="ph-sub">القاهرة — يوم عرفة ١٤٤٦</div>
+      <div class="ph-ornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="pr-next-card">
+      <div class="pr-next-eye">الصلاة القادمة</div>
+      <div class="pr-next-name" id="pr-next-name">—</div>
+      <div class="pr-next-in" id="pr-next-in">يُحسب...</div>
+    </div>
+    <div class="pr-hijri">
+      <div>
+        <div class="pr-hijri-ar">يوم عرفة — ٩ ذو الحجة ١٤٤٦</div>
+        <div class="pr-hijri-en" style="margin-top:2px">Arafah Day · 1446 AH</div>
+      </div>
+      <div style="font-size:1.5rem">🌙</div>
+    </div>
+    <div class="pr-list" id="pr-list"></div>
+  </div>
+
+  <!-- ════ STATS ════ -->
+  <div class="pg" id="pg-stats">
+    <div class="ph">
+      <div class="ph-eyebrow">لوحة الإنجازات</div>
+      <div class="ph-title">إحصائياتي</div>
+      <div class="ph-sub">تقدمك الروحاني في يوم عرفة</div>
+      <div class="ph-ornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="stats-cards">
+      <div class="st-card">
+        <span class="st-num" id="st-az">0</span>
+        <span class="st-lbl">أذكار مكتملة</span>
+      </div>
+      <div class="st-card">
+        <span class="st-num" id="st-ts">0</span>
+        <span class="st-lbl">تسبيحة</span>
+      </div>
+      <div class="st-card">
+        <span class="st-num" id="st-pg">0</span>
+        <span class="st-lbl">صفحات قرآن</span>
+      </div>
+      <div class="st-card">
+        <span class="st-num" id="st-du">0</span>
+        <span class="st-lbl">أدعية مفضلة</span>
+      </div>
+    </div>
+    <div class="bar-section">
+      <div class="dash-title" style="padding:16px 0 12px">نسبة الإنجاز</div>
+      <div class="bar-row">
+        <div class="bar-head"><span>الأذكار</span><span class="bar-pct" id="bp1">0%</span></div>
+        <div class="bar-track"><div class="bar-fill bar-gold" id="bf1" style="width:0%"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-head"><span>القرآن</span><span class="bar-pct" id="bp2">0%</span></div>
+        <div class="bar-track"><div class="bar-fill bar-olive" id="bf2" style="width:0%"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-head"><span>التسبيح</span><span class="bar-pct" id="bp3">0%</span></div>
+        <div class="bar-track"><div class="bar-fill bar-warm2" id="bf3" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="dash-title" style="padding:8px 16px 12px">نشاط اليوم</div>
+    <div class="activity-grid" id="act-grid"></div>
+    <div class="insights-card">
+      <div class="insights-head">✦ توصيات الآن</div>
+      <div id="insights-list"></div>
+    </div>
+  </div>
+
+  <!-- ════ SETTINGS ════ -->
+  <div class="pg" id="pg-settings">
+    <div class="ph">
+      <div class="ph-eyebrow">تخصيص التطبيق</div>
+      <div class="ph-title">الإعدادات</div>
+      <div class="ph-sub">اجعل التجربة مريحة لك</div>
+      <div class="ph-ornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="settings-list">
+      <div class="setting-group">
+        <div class="setting-item">
+          <div class="setting-left">
+            <div class="setting-icon">🌙</div>
+            <div>
+              <div class="setting-name">الوضع الليلي</div>
+              <div class="setting-desc">خلفية داكنة لراحة العينين</div>
+            </div>
+          </div>
+          <button class="toggle" id="tg-dark" onclick="toggleTheme()"></button>
+        </div>
+        <div class="setting-item">
+          <div class="setting-left">
+            <div class="setting-icon">📳</div>
+            <div>
+              <div class="setting-name">الاهتزاز</div>
+              <div class="setting-desc">اهتزاز خفيف عند التسبيح</div>
+            </div>
+          </div>
+          <button class="toggle on" id="tg-vib" onclick="toggleSetting('vib')"></button>
+        </div>
+        <div class="setting-item">
+          <div class="setting-left">
+            <div class="setting-icon">🔁</div>
+            <div>
+              <div class="setting-name">تكرار الذكر تلقائياً</div>
+              <div class="setting-desc">العودة للبداية بعد الاكتمال</div>
+            </div>
+          </div>
+          <button class="toggle" id="tg-loop" onclick="toggleSetting('loop')"></button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <div class="setting-item">
+          <div class="setting-left">
+            <div class="setting-icon">🕌</div>
+            <div>
+              <div class="setting-name">المدينة</div>
+              <div class="setting-desc">مواقيت الصلاة</div>
+            </div>
+          </div>
+          <div class="setting-val">القاهرة</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-left">
+            <div class="setting-icon">📅</div>
+            <div>
+              <div class="setting-name">التقويم</div>
+              <div class="setting-desc">عرض التاريخ</div>
+            </div>
+          </div>
+          <div class="setting-val">هجري + ميلادي</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="about-logo">🕌</div>
+      <div class="about-name">رفيق عرفة</div>
+      <div class="about-ver">الإصدار ٢.٠ · يوم عرفة ١٤٤٦</div>
+      <div class="about-desc">تطبيق روحاني إسلامي لمرافقتك في أعظم أيام السنة — يوم عرفة المبارك. أكثر من الدعاء والذكر والاستغفار.</div>
+    </div>
+    <button class="danger-btn" onclick="resetAll()">⚠ إعادة تعيين كل البيانات</button>
+    <div style="height:20px"></div>
+  </div>
+
+  <!-- ════ BOTTOM NAV ════ -->
+  <nav class="nav-bar">
+    <button class="ni on" data-pg="home" onclick="goPage('home')">
+      <div class="ni-dot"></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+      الرئيسية
+    </button>
+    <button class="ni" data-pg="timeline" onclick="goPage('timeline')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      الخطة
+    </button>
+    <button class="ni" data-pg="azkar" onclick="goPage('azkar')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
+      الأذكار
+    </button>
+    <button class="ni" data-pg="tasbeeh" onclick="goPage('tasbeeh')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+      السبحة
+    </button>
+    <button class="ni" data-pg="duas" onclick="goPage('duas')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      الأدعية
+    </button>
+    <button class="ni" data-pg="settings" onclick="goPage('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      الإعدادات
+    </button>
+  </nav>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════════ */
+const DATA = {
+  quotes:[
+    {text:"خَيْرُ الدُّعَاءِ دُعَاءُ يَوْمِ عَرَفَةَ، وَخَيْرُ مَا قُلْتُ أَنَا وَالنَّبِيُّونَ مِنْ قَبْلِي: لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ",src:"حديث شريف"},
+    {text:"مَا مِنْ يَوْمٍ أَكْثَرَ مِنْ أَنْ يُعْتِقَ اللهُ فِيهِ عَبْدًا مِنَ النَّارِ مِنْ يَوْمِ عَرَفَةَ",src:"صحيح مسلم"},
+    {text:"إِنَّ اللهَ يُبَاهِي بِأَهْلِ عَرَفَاتٍ مَلَائِكَتَهُ",src:"صحيح مسلم"},
+    {text:"فَاذْكُرُوا اللَّهَ كَذِكْرِكُمْ آبَاءَكُمْ أَوْ أَشَدَّ ذِكْرًا",src:"سورة البقرة ٢٠٠"},
+    {text:"أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",src:"سورة الرعد ٢٨"}
+  ],
+  timeline:[
+    {h:4,m:15,emoji:"🌙",title:"الفجر وأذكار الصباح",detail:"صلاة الفجر في جماعة ثم أذكار الصباح كاملة والاستغفار",tags:["واجب","أذكار"],imp:true},
+    {h:5,m:45,emoji:"📖",title:"تلاوة القرآن الكريم",detail:"ابدأ وردك القرآني مع التدبر في كلام الله تعالى",tags:["سنة","قرآن"]},
+    {h:7,m:0,emoji:"☀️",title:"صلاة الإشراق والضحى",detail:"صلاة ركعتين عند الإشراق وصلاة الضحى — تعدل حجة وعمرة",tags:["سنة مؤكدة"]},
+    {h:9,m:0,emoji:"🔮",title:"التسبيح والتكبير",detail:"سبحان الله وبحمده — لا إله إلا الله — الله أكبر ولله الحمد",tags:["مستحب","ذكر"]},
+    {h:12,m:5,emoji:"🕌",title:"صلاة الظهر",detail:"صلاة الظهر في وقتها مع السنة القبلية والبعدية",tags:["واجب"],imp:true},
+    {h:13,m:0,emoji:"🤲",title:"الدعاء بعد الظهر",detail:"أكثر من الدعاء والتضرع في هذا الوقت المبارك",tags:["مستحب","دعاء"]},
+    {h:15,m:28,emoji:"🌅",title:"صلاة العصر",detail:"صلاة العصر في وقتها — من فاتته فكأنما وتر أهله وماله",tags:["واجب"],imp:true},
+    {h:16,m:30,emoji:"⭐",title:"ساعة الدعاء الذهبية",detail:"هذه أفضل ساعات يوم عرفة — أكثر من الدعاء والبكاء والتضرع",tags:["ذهبي 🌟","دعاء"],imp:true,golden:true},
+    {h:18,m:52,emoji:"🌄",title:"المغرب وأذكار المساء",detail:"أذكار المساء كاملة بعد الأذان مباشرة — لا تفوّت هذا الوقت",tags:["واجب","أذكار"],imp:true},
+    {h:20,m:22,emoji:"🌙",title:"صلاة العشاء",detail:"صلاة العشاء وقيام الليل ولو ركعتين — ادعُ الله في جوف الليل",tags:["واجب"]},
+    {h:23,m:0,emoji:"💎",title:"قيام الليل والتهجد",detail:"قيام الليل مع التلاوة والدعاء والبكاء — هذه ليلة مباركة",tags:["سنة","قيام"]},
+    {h:2,m:30,emoji:"🌠",title:"السحر والاستغفار",detail:"وَالْمُسْتَغْفِرِينَ بِالْأَسْحَارِ — أكثر من الاستغفار في هذا الوقت",tags:["ذهبي 🌟","استغفار"],golden:true},
+    {h:4,m:15,emoji:"🎊",title:"فجر العيد المبارك",detail:"الله أكبر الله أكبر لا إله إلا الله — تكبيرات العيد",tags:["واجب","العيد"],imp:true}
+  ],
+  azkar:{
+    "أذكار الصباح":[
+      {text:"اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ",n:1,src:"حصن المسلم"},
+      {text:"أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",n:1,src:"أبو داود"},
+      {text:"اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ فَتْحَهُ وَنَصْرَهُ وَنُورَهُ وَبَرَكَتَهُ وَهُدَاهُ وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ",n:1,src:"أبو داود"},
+      {text:"سُبْحَانَ اللهِ وَبِحَمْدِهِ",n:100,src:"البخاري ومسلم"}
+    ],
+    "أذكار المساء":[
+      {text:"اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ",n:1,src:"حصن المسلم"},
+      {text:"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",n:1,src:"حصن المسلم"},
+      {text:"اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ — أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ",n:3,src:"البخاري"},
+      {text:"أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",n:3,src:"مسلم"}
+    ],
+    "تكبيرات العيد":[
+      {text:"اللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ لَا إِلَهَ إِلَّا اللَّهُ ، اللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ وَلِلَّهِ الْحَمْدُ",n:33,src:"الجمهور"},
+      {text:"اللَّهُ أَكْبَرُ كَبِيرًا وَالْحَمْدُ لِلَّهِ كَثِيرًا وَسُبْحَانَ اللهِ بُكْرَةً وَأَصِيلًا",n:10,src:"مأثور"}
+    ],
+    "الاستغفار":[
+      {text:"أَسْتَغْفِرُ اللهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ",n:100,src:"الترمذي"},
+      {text:"رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ",n:100,src:"أحمد"}
+    ],
+    "الصلاة على النبي ﷺ":[
+      {text:"اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى نَبِيِّنَا مُحَمَّدٍ",n:100,src:"السنة"},
+      {text:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",n:10,src:"البخاري"}
+    ],
+    "دعاء عرفة":[
+      {text:"لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",n:100,src:"الترمذي — أفضل دعاء عرفة"}
+    ]
+  },
+  tsbModes:[
+    {id:"tasbih",lbl:"تسبيح",txt:"سُبْحَانَ اللهِ",tgt:33},
+    {id:"tahmid",lbl:"تحميد",txt:"الْحَمْدُ لِلَّهِ",tgt:33},
+    {id:"takbir",lbl:"تكبير",txt:"اللهُ أَكْبَرُ",tgt:33},
+    {id:"tahlil",lbl:"تهليل",txt:"لَا إِلَهَ إِلَّا اللهُ",tgt:100},
+    {id:"istighfar",lbl:"استغفار",txt:"أَسْتَغْفِرُ اللهَ",tgt:100},
+    {id:"free",lbl:"حر",txt:"اذكر الله",tgt:0}
+  ],
+  khDhikrs:["سُبْحَانَ اللهِ","الْحَمْدُ لِلَّهِ","اللهُ أَكْبَرُ","لَا إِلَهَ إِلَّا اللهُ","أَسْتَغْفِرُ اللهَ"],
+  quranPlans:[
+    {id:"khatma",icon:"📖",name:"ختمة كاملة",pages:604,h:"12-15 ساعة",suras:"كل القرآن"},
+    {id:"half",icon:"📑",name:"نصف ختمة",pages:302,h:"6-8 ساعات",suras:"نصف القرآن"},
+    {id:"quarter",icon:"📄",name:"ربع ختمة",pages:151,h:"3-4 ساعات",suras:"ربع القرآن"},
+    {id:"juz",icon:"🗒️",name:"جزء واحد",pages:20,h:"30-45 دقيقة",suras:"جزء عمّ"}
+  ],
+  duas:{
+    "دعاء عرفة":[
+      {ar:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",tr:"لا معبود بحق إلا الله وحده، له الملك وله الحمد، وهو على كل شيء قدير",src:"أفضل دعاء يوم عرفة — الترمذي"}
+    ],
+    "التوبة":[
+      {ar:"رَبِّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ",tr:"يا ربي، إني ظلمت نفسي كثيرًا، ولا يغفر الذنوب إلا أنت، فاغفر لي مغفرة من عندك وارحمني",src:"دعاء سيدنا موسى — البخاري ومسلم"},
+      {ar:"اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",tr:"يا الله، إنك عفو تحب العفو فاعف عني",src:"صحيح — ليلة القدر والأيام الفاضلة"}
+    ],
+    "الرزق":[
+      {ar:"اللَّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ",tr:"اللهم أغنني بحلالك عن حرامك، وبفضلك أغنني عن خلقك",src:"دعاء النبي ﷺ — الترمذي"},
+      {ar:"رَبِّ إِنِّي لِمَا أَنزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ",tr:"يا ربي إني محتاج لما تنزله عليّ من خير",src:"سورة القصص ٢٤"}
+    ],
+    "للوالدين":[
+      {ar:"رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",tr:"يا ربي ارحمهما كما ربّياني في صغري",src:"سورة الإسراء ٢٤"},
+      {ar:"اللَّهُمَّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا وَارْزُقْهُمَا الْجَنَّةَ",tr:"اللهم اغفر لي ولوالديّ وارحمهما كما ربياني صغيرًا",src:"دعاء مأثور"}
+    ],
+    "للأهل":[
+      {ar:"رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا",tr:"ربنا هب لنا من أزواجنا وذرياتنا ما يُقرّ أعيننا، واجعلنا أئمة للمتقين",src:"سورة الفرقان ٧٤"},
+      {ar:"رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ وَمِن ذُرِّيَّتِي ۚ رَبَّنَا وَتَقَبَّلْ دُعَاءِ",tr:"يا ربي اجعلني مقيم الصلاة ومن ذريتي، وتقبّل دعاءي",src:"سورة إبراهيم ٤٠"}
+    ],
+    "الشامل":[
+      {ar:"اللَّهُمَّ آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",tr:"اللهم أعطنا خيرًا في الدنيا وخيرًا في الآخرة وقنا عذاب النار",src:"سورة البقرة ٢٠١ — أكثره النبي ﷺ"}
+    ]
+  },
+  prayers:[
+    {name:"الفجر",icon:"🌙",h:4,m:15,t:"04:15"},
+    {name:"الشروق",icon:"🌅",h:5,m:45,t:"05:45"},
+    {name:"الظهر",icon:"☀️",h:12,m:5,t:"12:05"},
+    {name:"العصر",icon:"🌤️",h:15,m:28,t:"15:28"},
+    {name:"المغرب",icon:"🌇",h:18,m:52,t:"18:52"},
+    {name:"العشاء",icon:"🌙",h:20,m:22,t:"20:22"}
+  ],
+  timeSlots:[
+    {f:4,t:6,lbl:"أذكار الصباح والفجر",dhikr:"اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا",next:"تلاوة القرآن"},
+    {f:6,t:9,lbl:"تلاوة القرآن الكريم",dhikr:"وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا — تلاوة مع التدبر",next:"التسبيح والتكبير"},
+    {f:9,t:12,lbl:"التسبيح والتكبير",dhikr:"سُبْحَانَ اللهِ وَبِحَمْدِهِ سُبْحَانَ اللهِ الْعَظِيمِ",next:"صلاة الظهر"},
+    {f:12,t:15.5,lbl:"الظهر والدعاء",dhikr:"اللَّهُمَّ آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",next:"صلاة العصر"},
+    {f:15.5,t:16.5,lbl:"صلاة العصر والذكر",dhikr:"أَسْتَغْفِرُ اللهَ وَأَتُوبُ إِلَيْهِ",next:"ساعة الدعاء الذهبية"},
+    {f:16.5,t:18.87,lbl:"⭐ ساعة الدعاء الذهبية",dhikr:"لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ — أكثر من الدعاء الآن",next:"المغرب"},
+    {f:18.87,t:20.37,lbl:"المغرب وأذكار المساء",dhikr:"اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ",next:"صلاة العشاء"},
+    {f:20.37,t:24,lbl:"العشاء وقيام الليل",dhikr:"رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا",next:"السحر"}
+  ]
+};
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let S = {
+  azkar:{},         // cat_i -> count
+  tsbCount:0,       // current cycle count
+  tsbSession:0,     // this session total
+  tsbAll:0,         // all-time
+  tsbRounds:0,      // completed rounds
+  tsbMode:0,
+  quranPlan:'juz',
+  quranPages:{},    // page_key -> bool
+  favDuas:{},
+  prayersDone:{},   // 'fajr' -> bool
+  theme:'light',
+  vib:true,
+  loop:false,
+  khDhikr:0,
+  khCount:0,
+  khSession:0,
+  actLog:[],        // activity log array
+  quotePick:0
+};
+
+function loadS(){try{const d=localStorage.getItem('ra-v3');if(d)Object.assign(S,JSON.parse(d))}catch(e){}}
+function saveS(){try{localStorage.setItem('ra-v3',JSON.stringify(S))}catch(e){}}
+
+/* ══════════════════════════════════════════════════
+   SPLASH PARTICLES
+══════════════════════════════════════════════════ */
+function initParticles(){
+  const wrap=document.getElementById('sp-particles');
+  if(!wrap)return;
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const x=Math.random()*100,y=Math.random()*100;
+    const dur=6+Math.random()*8,delay=Math.random()*8;
+    const dx=(Math.random()-0.5)*40;
+    p.style.cssText=`left:${x}%;top:${y}%;--dur:${dur}s;--delay:${delay}s;--dx:${dx}px`;
+    wrap.appendChild(p);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   START
+══════════════════════════════════════════════════ */
+function startApp(){
+  document.getElementById('splash').classList.add('out');
+  const app=document.getElementById('app');
+  app.classList.add('on');
+  setTimeout(()=>init(),800);
+}
+
+function init(){
+  loadS();
+  applyTheme();
+  renderQuote();
+  startClock();
+  buildTimeline();
+  buildAzkar();
+  buildTasbeeh();
+  buildQuran();
+  buildDuas();
+  buildPrayers();
+  buildActivityGrid();
+  buildInsights();
+  updateRings();
+  updateKPIs();
+  updateSettings();
+}
+
+/* ══════════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════ */
+let curPg='home';
+function goPage(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  const pg=document.getElementById('pg-'+id);
+  if(pg)pg.classList.add('on');
+  const ni=document.querySelector(`[data-pg="${id}"]`);
+  if(ni)ni.classList.add('on');
+  curPg=id;
+  window.scrollTo({top:0,behavior:'instant'});
+  if(id==='stats'){updateStats();buildActivityGrid();buildInsights()}
+}
+
+/* ══════════════════════════════════════════════════
+   CLOCK
+══════════════════════════════════════════════════ */
+function startClock(){tick();setInterval(tick,1000)}
+function tick(){
+  const now=new Date();
+  const h=now.getHours(),m=now.getMinutes(),s=now.getSeconds();
+  const h12=h%12||12;
+  const mm=String(m).padStart(2,'0'),ss=String(s).padStart(2,'0');
+  const ampm=h<12?'ص':'م';
+  set('h-clock',`${h12}:${mm}:${ss}`);
+  set('h-ampm',ampm);
+  const days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  set('h-date',`${days[now.getDay()]} — يوم عرفة ٩ ذو الحجة ١٤٤٦`);
+  // Maghrib countdown
+  const mag=new Date(now);mag.setHours(18,52,0,0);
+  let diff=mag-now;
+  if(diff<0){set('h-mag','مضى المغرب');}
+  else{
+    const hh=Math.floor(diff/3600000),mmm=Math.floor((diff%3600000)/60000),sss=Math.floor((diff%60000)/1000);
+    set('h-mag',`${hh}:${String(mmm).padStart(2,'0')}:${String(sss).padStart(2,'0')} للمغرب`);
+  }
+  updateCurrentPrayer(now);
+  updateStatusCard(now);
+  updateDayRing(now);
+  updatePrayerNext(now);
+}
+
+function updateCurrentPrayer(now){
+  const hf=now.getHours()+now.getMinutes()/60;
+  let cur=DATA.prayers[0];
+  for(const p of DATA.prayers){if(hf>=p.h+p.m/60)cur=p}
+  set('h-prayer',cur.name);
+}
+
+function updateStatusCard(now){
+  const hf=now.getHours()+now.getMinutes()/60;
+  const slot=DATA.timeSlots.find(s=>hf>=s.f&&hf<s.t)||DATA.timeSlots[DATA.timeSlots.length-1];
+  set('s-now',slot.lbl);
+  set('s-dhikr',slot.dhikr);
+  set('s-next-lbl','التالي:');
+  set('s-next-val',slot.next||'—');
+}
+
+function updateDayRing(now){
+  const start=new Date(now);start.setHours(4,15,0,0);
+  const end=new Date(now);end.setDate(end.getDate()+1);end.setHours(4,15,0,0);
+  const pct=Math.min(100,Math.max(0,(now-start)/(end-start)*100));
+  set('r-pct',Math.round(pct)+'%');
+  setRing('r-day',553,pct);
+}
+
+function updatePrayerNext(now){
+  const hf=now.getHours()+now.getMinutes()/60;
+  let next=null;
+  for(const p of DATA.prayers){if(p.h+p.m/60>hf){next=p;break}}
+  if(!next)next=DATA.prayers[0];
+  set('pr-next-name',next.name);
+  const target=new Date(now);target.setHours(next.h,next.m,0,0);
+  let d=target-now;if(d<0)d+=86400000;
+  const hh=Math.floor(d/3600000),mm=Math.floor((d%3600000)/60000),ss=Math.floor((d%60000)/1000);
+  set('pr-next-in',`بعد ${hh>0?hh+' ساعة و':''}${mm} دقيقة و${ss} ثانية`);
+}
+
+/* ══════════════════════════════════════════════════
+   RINGS & KPIS
+══════════════════════════════════════════════════ */
+function setRing(id,circ,pct){
+  const el=document.getElementById(id);
+  if(el)el.style.strokeDashoffset=circ-(circ*pct/100);
+}
+function updateRings(){
+  const azTotal=Object.values(S.azkar).reduce((a,b)=>a+b,0);
+  const azMax=500;
+  setRing('r-azkar',452,Math.min(100,azTotal/azMax*100));
+  const pgDone=Object.values(S.quranPages).filter(v=>v).length;
+  const plan=DATA.quranPlans.find(p=>p.id===S.quranPlan)||DATA.quranPlans[3];
+  const pgMax=Math.min(plan.pages,24);
+  setRing('r-quran',352,Math.min(100,pgDone/pgMax*100));
+  // Quran ring
+  const qPct=pgMax>0?Math.round(pgDone/pgMax*100):0;
+  set('qr-pct',qPct+'%');
+  const qr=document.getElementById('qr-ring');
+  if(qr)qr.style.strokeDashoffset=390-(390*qPct/100);
+}
+function updateKPIs(){
+  const azTotal=Object.values(S.azkar).reduce((a,b)=>a+b,0);
+  const pgDone=Object.values(S.quranPages).filter(v=>v).length;
+  const prDone=Object.values(S.prayersDone).filter(v=>v).length;
+  set('kpi-az',fmt(azTotal));
+  set('kpi-ts',fmt(S.tsbAll||0));
+  set('kpi-pg',fmt(pgDone));
+  set('kpi-pr',prDone);
+}
+function fmt(n){return n>=1000?(n/1000).toFixed(1)+'k':n}
+
+/* ══════════════════════════════════════════════════
+   QUOTE TICKER
+══════════════════════════════════════════════════ */
+function renderQuote(){
+  const q=DATA.quotes[S.quotePick%DATA.quotes.length];
+  set('qt-text',q.text);set('qt-src',q.src);
+  const el=document.getElementById('qt-text');
+  if(el){el.style.animation='none';requestAnimationFrame(()=>el.style.animation='')}
+}
+setInterval(()=>{S.quotePick++;renderQuote()},15000);
+
+/* ══════════════════════════════════════════════════
+   TIMELINE
+══════════════════════════════════════════════════ */
+function buildTimeline(){
+  const wrap=document.getElementById('tl-wrap');
+  if(!wrap)return;
+  const line=wrap.querySelector('.tl-line');
+  wrap.innerHTML='';wrap.appendChild(line);
+  const now=new Date();
+  const nowH=now.getHours()+now.getMinutes()/60;
+  DATA.timeline.forEach((item,i)=>{
+    const itemH=item.h+item.m/60;
+    const isNow=i<DATA.timeline.length-1&&nowH>=itemH&&nowH<(DATA.timeline[i+1]?.h+DATA.timeline[i+1]?.m/60||24);
+    const isPast=nowH>itemH&&!isNow;
+    const div=document.createElement('div');
+    div.className='tl-item';
+    div.style.animationDelay=(i*0.06)+'s';
+    div.innerHTML=`
+      <div class="tl-dot-wrap">
+        <div class="tl-dot ${isNow?'now':isPast?'past':''}">${item.emoji}</div>
+      </div>
+      <div class="tl-box ${isNow?'now':isPast?'past':''}">
+        <div class="tl-when">${String(item.h).padStart(2,'0')}:${String(item.m).padStart(2,'0')} — ${item.title.split(' ')[0]}</div>
+        <div class="tl-name">${item.title}</div>
+        <div class="tl-detail">${item.detail}</div>
+        <div class="tl-tags">
+          ${item.tags.map(t=>`<span class="tl-tag ${t.includes('🌟')||item.golden?'imp':''}">${t}</span>`).join('')}
+          ${isNow?'<span class="tl-now-badge"><div style="width:5px;height:5px;border-radius:50%;background:#0a0a08;animation:pulse 2s infinite;flex-shrink:0"></div> الوقت الحالي</span>':''}
+        </div>
+      </div>`;
+    wrap.appendChild(div);
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   AZKAR
+══════════════════════════════════════════════════ */
+let azCat=Object.keys(DATA.azkar)[0];
+function buildAzkarCats(){
+  const wrap=document.getElementById('az-cats');if(!wrap)return;
+  wrap.innerHTML='';
+  Object.keys(DATA.azkar).forEach(cat=>{
+    const b=document.createElement('button');
+    b.className='cat-pill'+(cat===azCat?' on':'');
+    b.textContent=cat;
+    b.onclick=()=>{azCat=cat;buildAzkar()};
+    wrap.appendChild(b);
+  });
+}
+function buildAzkar(){
+  buildAzkarCats();
+  const feed=document.getElementById('az-feed');if(!feed)return;
+  feed.innerHTML='';
+  const items=DATA.azkar[azCat]||[];
+  items.forEach((z,i)=>{
+    const key=azCat+'_'+i;
+    if(!S.azkar[key])S.azkar[key]=0;
+    const cur=S.azkar[key],total=z.n;
+    const done=cur>=total;
+    const pct=Math.min(100,(cur/total)*100);
+    const card=document.createElement('div');
+    card.className='zkr'+(done?' done':'');
+    card.innerHTML=`
+      <div class="zkr-head">
+        <div class="zkr-badge">${z.src||''}</div>
+        <div class="zkr-text">${z.text}</div>
+      </div>
+      <div class="zkr-foot">
+        <div class="zkr-prog"><span>${cur}</span> / ${total}</div>
+        <div class="zkr-actions">
+          <button class="zkr-reset" onclick="resetZkr('${key}',${i})">↺</button>
+          <button class="zkr-btn ${done?'full':''}" id="zb-${key}" onclick="tapZkr('${key}',${total},${i})">
+            ${done?'✓':'+'}
+          </button>
+        </div>
+      </div>
+      <div class="zkr-bar"><div class="zkr-bar-fill" style="width:${pct}%"></div></div>`;
+    feed.appendChild(card);
+  });
+}
+function tapZkr(key,total,i){
+  if(!S.azkar[key])S.azkar[key]=0;
+  if(S.azkar[key]<total){
+    S.azkar[key]++;
+    logActivity('azkar');
+    saveS();buildAzkar();updateKPIs();updateRings();
+    if(S.azkar[key]>=total)toast('أتممت الذكر! جزاك الله خيرًا 🤍');
+  }
+}
+function resetZkr(key){S.azkar[key]=0;saveS();buildAzkar();updateKPIs()}
+
+/* ══════════════════════════════════════════════════
+   TASBEEH
+══════════════════════════════════════════════════ */
+function buildTasbeeh(){
+  const wrap=document.getElementById('tsb-modes');if(!wrap)return;
+  wrap.innerHTML='';
+  DATA.tsbModes.forEach((m,i)=>{
+    const b=document.createElement('button');
+    b.className='tsb-mode'+(i===S.tsbMode?' on':'');
+    b.textContent=m.lbl;
+    b.onclick=()=>{S.tsbMode=i;S.tsbCount=0;saveS();buildTasbeeh()};
+    wrap.appendChild(b);
+  });
+  const mode=DATA.tsbModes[S.tsbMode];
+  set('tsb-txt',mode.txt);
+  set('tsb-num',S.tsbCount);
+  set('tsb-tgt',mode.tgt>0?`الهدف: ${mode.tgt} | الجولة ${(S.tsbRounds||0)+1}`:'تسبيح حر');
+  set('tsb-total',S.tsbSession||0);
+  set('tsb-rounds',S.tsbRounds||0);
+  set('tsb-all',fmt(S.tsbAll||0));
+  // arc
+  if(mode.tgt>0){
+    const pct=(S.tsbCount/mode.tgt)*100;
+    const arc=document.getElementById('tsb-arc');
+    if(arc)arc.style.strokeDashoffset=679-(679*pct/100);
+  } else {
+    const arc=document.getElementById('tsb-arc');
+    if(arc)arc.style.strokeDashoffset=679;
+  }
+}
+function tsbTap(e){
+  const circle=document.getElementById('tsb-circle');
+  // Ripple
+  const rect=circle.getBoundingClientRect();
+  const x=(e.clientX||rect.left+rect.width/2)-rect.left;
+  const y=(e.clientY||rect.top+rect.height/2)-rect.top;
+  const rip=document.createElement('div');
+  rip.className='rip';
+  rip.style.left=(x-10)+'px';rip.style.top=(y-10)+'px';
+  circle.appendChild(rip);
+  setTimeout(()=>rip.remove(),700);
+  // Flash
+  circle.classList.add('flash');setTimeout(()=>circle.classList.remove('flash'),400);
+  // Count
+  S.tsbCount++;
+  S.tsbSession=(S.tsbSession||0)+1;
+  S.tsbAll=(S.tsbAll||0)+1;
+  const mode=DATA.tsbModes[S.tsbMode];
+  if(mode.tgt>0&&S.tsbCount>=mode.tgt){
+    S.tsbRounds=(S.tsbRounds||0)+1;
+    S.tsbCount=0;
+    toast(`أتممت ${mode.tgt} ${mode.lbl} 🌟`);
+  }
+  logActivity('tasbeeh');
+  saveS();buildTasbeeh();updateKPIs();
+  if(S.vib&&navigator.vibrate)navigator.vibrate(25);
+}
+function tsbReset(){S.tsbCount=0;saveS();buildTasbeeh()}
+function tsbNewSession(){S.tsbCount=0;S.tsbSession=0;S.tsbRounds=0;saveS();buildTasbeeh();toast('جلسة جديدة 🌿')}
+
+/* ══════════════════════════════════════════════════
+   QURAN
+══════════════════════════════════════════════════ */
+function buildQuran(){
+  buildQrPlans();buildQrPages();
+}
+function buildQrPlans(){
+  const wrap=document.getElementById('qr-plans');if(!wrap)return;
+  wrap.innerHTML='';
+  DATA.quranPlans.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='qr-plan'+(p.id===S.quranPlan?' on':'');
+    card.innerHTML=`
+      <div class="qr-plan-icon">${p.icon}</div>
+      <div class="qr-plan-info">
+        <div class="qr-plan-name">${p.name}</div>
+        <div class="qr-plan-meta">${p.pages} صفحة · ${p.h} · ${p.suras}</div>
+      </div>
+      <div class="qr-plan-check">✓</div>`;
+    card.onclick=()=>{S.quranPlan=p.id;S.quranPages={};saveS();buildQuran();updateRings();updateKPIs()};
+    wrap.appendChild(card);
+  });
+  // info
+  const plan=DATA.quranPlans.find(p=>p.id===S.quranPlan)||DATA.quranPlans[3];
+  const info=document.getElementById('qr-info');
+  if(info)info.innerHTML=`
+    <div class="qr-info-item"><div class="qr-info-icon">📄</div><div><div class="qr-info-val">${plan.pages} صفحة</div><div class="qr-info-label">مجموع الورد</div></div></div>
+    <div class="qr-info-item"><div class="qr-info-icon">⏱️</div><div><div class="qr-info-val">${plan.h}</div><div class="qr-info-label">الوقت المتوقع</div></div></div>
+    <div class="qr-info-item"><div class="qr-info-icon">📖</div><div><div class="qr-info-val">${plan.suras}</div><div class="qr-info-label">القرآن</div></div></div>`;
+}
+function buildQrPages(){
+  const plan=DATA.quranPlans.find(p=>p.id===S.quranPlan)||DATA.quranPlans[3];
+  const count=Math.min(plan.pages,24);
+  const wrap=document.getElementById('qr-pages');if(!wrap)return;
+  wrap.innerHTML='';
+  let done=0;
+  for(let i=1;i<=count;i++){
+    const k='p'+i;
+    const isDone=!!S.quranPages[k];
+    if(isDone)done++;
+    const div=document.createElement('div');
+    div.className='qr-page'+(isDone?' done':'');
+    div.innerHTML=`
+      <div class="qr-page-info">
+        <div class="qr-page-num">صفحة ${i}</div>
+        <div class="qr-page-sub">${surahForPage(i)}</div>
+      </div>
+      <button class="qr-chk ${isDone?'done':''}" onclick="togglePage('${k}')" style="color:${isDone?'#0a0a08':'transparent'}">✓</button>`;
+    wrap.appendChild(div);
+  }
+  const pct=count>0?Math.round(done/count*100):0;
+  set('qr-pct',pct+'%');
+  const qr=document.getElementById('qr-ring');
+  if(qr)qr.style.strokeDashoffset=390-(390*pct/100);
+  updateRings();updateKPIs();
+}
+function togglePage(k){
+  S.quranPages[k]=!S.quranPages[k];
+  if(!S.quranPages[k])delete S.quranPages[k];
+  if(S.quranPages[k])logActivity('quran');
+  saveS();buildQrPages();updateRings();updateKPIs();
+}
+function surahForPage(n){
+  if(n<=1)return'الفاتحة';
+  if(n<=49)return'البقرة';
+  if(n<=76)return'آل عمران';
+  if(n<=106)return'النساء';
+  if(n<=127)return'المائدة';
+  if(n<=150)return'الأنعام';
+  return'القرآن الكريم';
+}
+
+/* ══════════════════════════════════════════════════
+   DUAS
+══════════════════════════════════════════════════ */
+let duaCat=Object.keys(DATA.duas)[0];
+function buildDuasCats(){
+  const wrap=document.getElementById('du-cats');if(!wrap)return;
+  wrap.innerHTML='';
+  Object.keys(DATA.duas).forEach(cat=>{
+    const b=document.createElement('button');
+    b.className='cat-pill'+(cat===duaCat?' on':'');
+    b.textContent=cat;
+    b.onclick=()=>{duaCat=cat;buildDuas()};
+    wrap.appendChild(b);
+  });
+}
+function buildDuas(){
+  buildDuasCats();
+  const feed=document.getElementById('du-feed');if(!feed)return;
+  feed.innerHTML='';
+  (DATA.duas[duaCat]||[]).forEach((dua,i)=>{
+    const k=duaCat+'_'+i;
+    const fav=!!S.favDuas[k];
+    const card=document.createElement('div');
+    card.className='dua-card'+(fav?' fav':'');
+    card.innerHTML=`
+      <div class="dua-card-head">
+        <div class="dua-cat">${duaCat}</div>
+        <div class="dua-source">${dua.src||''}</div>
+      </div>
+      <div class="dua-body">
+        <div class="dua-arabic">${dua.ar}</div>
+        <div class="dua-trans">${dua.tr}</div>
+      </div>
+      <div class="dua-foot">
+        <button class="dua-act ${fav?'on':''}" onclick="toggleFav('${k}',${i})" title="تفضيل">♡</button>
+        <button class="dua-act" onclick="copyDua(${i})" title="نسخ">⧉</button>
+        <button class="dua-act" onclick="shareDua(${i})" title="مشاركة">↗</button>
+      </div>`;
+    feed.appendChild(card);
+  });
+}
+function toggleFav(k){
+  S.favDuas[k]=!S.favDuas[k];
+  if(!S.favDuas[k])delete S.favDuas[k];
+  saveS();buildDuas();updateKPIs();
+}
+function copyDua(i){
+  const d=(DATA.duas[duaCat]||[])[i];
+  if(d){navigator.clipboard?.writeText(d.ar).then(()=>toast('تم نسخ الدعاء 📋'))}
+}
+function shareDua(i){
+  const d=(DATA.duas[duaCat]||[])[i];
+  if(d&&navigator.share){navigator.share({text:d.ar}).catch(()=>{})}
+  else copyDua(i);
+}
+
+/* ══════════════════════════════════════════════════
+   PRAYERS
+══════════════════════════════════════════════════ */
+function buildPrayers(){
+  const list=document.getElementById('pr-list');if(!list)return;
+  list.innerHTML='';
+  const now=new Date();
+  const hf=now.getHours()+now.getMinutes()/60;
+  let curI=0;
+  DATA.prayers.forEach((p,i)=>{if(hf>=p.h+p.m/60)curI=i});
+  DATA.prayers.forEach((p,i)=>{
+    const isCur=i===curI;
+    const isPast=i<curI;
+    const isDone=!!S.prayersDone[p.name];
+    const item=document.createElement('div');
+    item.className='pr-item'+(isCur?' cur':isPast?' past':'');
+    item.innerHTML=`
+      <div class="pr-left">
+        <div class="pr-icon">${p.icon}</div>
+        <div class="pr-name">${p.name}</div>
+      </div>
+      <div class="pr-right">
+        ${isCur?'<span class="pr-now">الآن</span>':''}
+        <div class="pr-time">${p.t}</div>
+        <button class="pr-check ${isDone?'done':''}" onclick="togglePrayer('${p.name}')" style="color:${isDone?'#fff':'transparent'}">✓</button>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+function togglePrayer(name){
+  S.prayersDone[name]=!S.prayersDone[name];
+  saveS();buildPrayers();updateKPIs();
+  if(S.prayersDone[name])toast('أُسجّلت الصلاة ✓');
+}
+
+/* ══════════════════════════════════════════════════
+   STATS
+══════════════════════════════════════════════════ */
+function updateStats(){
+  const azTotal=Object.values(S.azkar).reduce((a,b)=>a+b,0);
+  const pgDone=Object.values(S.quranPages).filter(v=>v).length;
+  const favDone=Object.keys(S.favDuas).length;
+  set('st-az',fmt(azTotal));
+  set('st-ts',fmt(S.tsbAll||0));
+  set('st-pg',pgDone);
+  set('st-du',favDone);
+  const azMax=500,pgMax=24,tsMax=3000;
+  const azP=Math.min(100,azTotal/azMax*100);
+  const pgP=Math.min(100,pgDone/pgMax*100);
+  const tsP=Math.min(100,(S.tsbAll||0)/tsMax*100);
+  setTimeout(()=>{
+    const bf1=document.getElementById('bf1');if(bf1)bf1.style.width=azP+'%';
+    const bf2=document.getElementById('bf2');if(bf2)bf2.style.width=pgP+'%';
+    const bf3=document.getElementById('bf3');if(bf3)bf3.style.width=tsP+'%';
+  },100);
+  set('bp1',Math.round(azP)+'%');
+  set('bp2',Math.round(pgP)+'%');
+  set('bp3',Math.round(tsP)+'%');
+}
+
+/* ══════════════════════════════════════════════════
+   ACTIVITY GRID
+══════════════════════════════════════════════════ */
+function logActivity(type){
+  const now=new Date();
+  S.actLog=S.actLog||[];
+  S.actLog.push({t:now.getTime(),type});
+  if(S.actLog.length>500)S.actLog=S.actLog.slice(-500);
+}
+function buildActivityGrid(){
+  const grid=document.getElementById('act-grid');if(!grid)return;
+  grid.innerHTML='';
+  const now=new Date();
+  // 28 cells = 4 weeks
+  for(let i=27;i>=0;i--){
+    const d=new Date(now);d.setDate(d.getDate()-i);
+    const dayStart=new Date(d);dayStart.setHours(0,0,0,0);
+    const dayEnd=new Date(d);dayEnd.setHours(23,59,59,999);
+    const count=(S.actLog||[]).filter(l=>l.t>=dayStart.getTime()&&l.t<=dayEnd.getTime()).length;
+    const cell=document.createElement('div');
+    cell.className='act-cell'+(count>30?'l4':count>15?'l3':count>5?'l2':count>0?'l1':'');
+    cell.title=`${d.toLocaleDateString('ar')} — ${count} نشاط`;
+    grid.appendChild(cell);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   INSIGHTS
+══════════════════════════════════════════════════ */
+function buildInsights(){
+  const wrap=document.getElementById('insights-list');if(!wrap)return;
+  const now=new Date();
+  const hf=now.getHours()+now.getMinutes()/60;
+  const insights=[];
+  const azTotal=Object.values(S.azkar).reduce((a,b)=>a+b,0);
+  if(azTotal===0)insights.push({icon:'📿',text:'ابدأ بأذكار الصباح الآن — هي أساس يومك الإيماني'});
+  if((S.tsbAll||0)<100)insights.push({icon:'🔮',text:'التسبيح يُنير القلب — اجعل هدفك ١٠٠ تسبيحة في الأقل'});
+  if(hf>=16&&hf<18.87)insights.push({icon:'⭐',text:'أنت الآن في ساعة الدعاء الذهبية — لا تفوّتها أبدًا'});
+  if(Object.values(S.quranPages).filter(v=>v).length===0)insights.push({icon:'📖',text:'ابدأ وردك القرآني — ولو صفحات معدودة'});
+  insights.push({icon:'🤲',text:'أفضل دعاء عرفة: لا إله إلا الله وحده لا شريك له، له الملك وله الحمد'});
+  wrap.innerHTML=insights.slice(0,4).map(ins=>`
+    <div class="insight-item">
+      <div class="insight-icon">${ins.icon}</div>
+      <div class="insight-text">${ins.text}</div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════
+   KHALWA
+══════════════════════════════════════════════════ */
+function openKhalwa(){
+  document.getElementById('khalwa').classList.add('on');
+  S.khCount=0;S.khSession=0;
+  buildKhPicks();
+  updateKhUI();
+}
+function closeKhalwa(){document.getElementById('khalwa').classList.remove('on')}
+function buildKhPicks(){
+  const wrap=document.getElementById('kh-picks');if(!wrap)return;
+  wrap.innerHTML='';
+  DATA.khDhikrs.forEach((d,i)=>{
+    const b=document.createElement('button');
+    b.className='kh-pick-btn'+(i===S.khDhikr?' on':'');
+    b.textContent=d.split(' ')[0]+'...';
+    b.onclick=()=>{S.khDhikr=i;S.khCount=0;buildKhPicks();updateKhUI()};
+    wrap.appendChild(b);
+  });
+}
+function khalwaTap(e){
+  S.khCount=(S.khCount||0)+1;
+  S.khSession=(S.khSession||0)+1;
+  S.tsbAll=(S.tsbAll||0)+1;
+  S.tsbSession=(S.tsbSession||0)+1;
+  // Ripple
+  const ring=document.getElementById('kh-ring');
+  const rect=ring.getBoundingClientRect();
+  const rip=document.createElement('div');
+  rip.className='rip';
+  rip.style.cssText=`left:${(e.clientX-rect.left-10)}px;top:${(e.clientY-rect.top-10)}px;position:absolute`;
+  ring.appendChild(rip);
+  setTimeout(()=>rip.remove(),700);
+  saveS();updateKhUI();
+  if(S.vib&&navigator.vibrate)navigator.vibrate(20);
+}
+function updateKhUI(){
+  set('kh-num',S.khCount||0);
+  set('kh-txt',DATA.khDhikrs[S.khDhikr||0]);
+  set('kh-ses','مجموع الخلوة: '+(S.khSession||0)+' تسبيحة');
+  // arc 628
+  const tgt=100;
+  const pct=((S.khCount||0)%tgt)/tgt;
+  const arc=document.getElementById('kh-arc');
+  if(arc)arc.style.strokeDashoffset=628-(628*pct);
+  if((S.khCount||0)>0&&(S.khCount||0)%tgt===0){
+    toast(`أتممت ${S.khCount} تسبيحة 🌟`);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   THEME & SETTINGS
+══════════════════════════════════════════════════ */
+function toggleTheme(){
+  S.theme=S.theme==='dark'?'light':'dark';
+  saveS();applyTheme();
+}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',S.theme);
+  const fab=document.getElementById('theme-fab');
+  if(fab)fab.textContent=S.theme==='dark'?'☀️':'🌙';
+  updateSettings();
+}
+function toggleSetting(key){
+  S[key]=!S[key];
+  saveS();updateSettings();
+}
+function updateSettings(){
+  const tgd=document.getElementById('tg-dark');
+  const tgv=document.getElementById('tg-vib');
+  const tgl=document.getElementById('tg-loop');
+  if(tgd){tgd.classList.toggle('on',S.theme==='dark')}
+  if(tgv){tgv.classList.toggle('on',S.vib)}
+  if(tgl){tgl.classList.toggle('on',S.loop)}
+}
+function resetAll(){
+  if(confirm('هل تريد حذف كل البيانات؟ لا يمكن التراجع عن هذا الإجراء.')){
+    const theme=S.theme;
+    S={azkar:{},tsbCount:0,tsbSession:0,tsbAll:0,tsbRounds:0,tsbMode:0,quranPlan:'juz',quranPages:{},favDuas:{},prayersDone:{},theme,vib:true,loop:false,khDhikr:0,khCount:0,khSession:0,actLog:[],quotePick:0};
+    saveS();init();toast('تم مسح كل البيانات');
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════ */
+function toast(msg,dur=2800){
+  const wrap=document.getElementById('toast-wrap');if(!wrap)return;
+  const el=document.createElement('div');
+  el.className='toast-msg';el.textContent=msg;
+  wrap.appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),400)},dur);
+}
+
+/* ══════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════ */
+function set(id,val){const el=document.getElementById(id);if(el)el.textContent=val}
+
+// Ripple on cards
+document.addEventListener('click',e=>{
+  const card=e.target.closest('.sc');
+  if(!card)return;
+  const rip=document.createElement('div');
+  rip.className='rip';
+  const rect=card.getBoundingClientRect();
+  rip.style.left=(e.clientX-rect.left-10)+'px';
+  rip.style.top=(e.clientY-rect.top-10)+'px';
+  card.appendChild(rip);
+  setTimeout(()=>rip.remove(),700);
+});
+
+/* ══════════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  initParticles();
+});
+</script>
+</body>
+</html>
